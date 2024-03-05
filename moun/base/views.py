@@ -1,10 +1,22 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 # Create your views here.
+
+rooms =[
+    {'id':1, 'name':'Chanm 16'},
+    {'id':2, 'name':'Politik'},
+    {'id':3, 'name':'HMI'},
+]
+
+
+
+
 def home(request):
-    return HttpResponse('Hello Moun')
+    context = {
+        'rooms': rooms
+    }
+    return render(request, 'base/home.html', context)
 
 
 def chanm(request):
-    return HttpResponse('Chanm 16')
+    return render(request, 'base/chanm.html', {'name': 'Chanm'})
