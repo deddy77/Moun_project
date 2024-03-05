@@ -17,6 +17,11 @@ def home(request):
     }
     return render(request, 'base/home.html', context)
 
-
-def chanm(request):
-    return render(request, 'base/chanm.html', {'name': 'Chanm'})
+ 
+def room(request, pk):
+    room = None
+    for r in rooms:
+        if r['id'] == int(pk):
+            room = r
+    context =  {'room': room}
+    return render(request, 'base/room.html', context)
