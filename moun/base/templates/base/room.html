@@ -7,6 +7,7 @@
         }
     </style>
         <div class = "room-container">
+            {% if request.user.is_authenticated %}
             <div>
                 <h1>{{room.name}}</h1>
                 <p>{{room.description}}</p>
@@ -44,5 +45,8 @@
                     </div>
                 {% endfor %}
             </div>
+            {% else %}
+                <small>Log in to join the conversation</small>
+            {% endif %}
         </div>
     {% endblock %}
