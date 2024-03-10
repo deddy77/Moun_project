@@ -22,5 +22,13 @@ urlpatterns = [
 
     
     path('topics/', views.topicsPage, name='topics'),
+
+    path('check_user_status/', views.check_user_status),
+
+    path('follow/<int:pk>/', views.follow_user, name='follow-user'),
+    #path('is_following/<int:pk>/', views.is_following, name='is-following'),
+
     path('activity/', views.activityPage, name='activity'),
+
+    
 ]

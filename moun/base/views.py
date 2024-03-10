@@ -3,12 +3,12 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-
+from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
-
-from .models import Room, Topic, Message, User
+from django.http import JsonResponse
+from .models import Room, Topic, Message, User, Follow
 from .forms import RoomForm, UserForm, MyUserCreationForm
-
+from django.views.decorators.http import require_http_methods
 # Create your views here.
 
 # rooms =[
@@ -41,6 +41,19 @@ def loginPage(request):
         
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
+
+
+def check_user_status(request):
+    users_status = []
+    for user in User.objects.all():
+        last_activity = user.last_activity.timestamp() if user.last_activity else None
+        if last_activity:
+            is_online = timezone.now().timestamp() - last_activity < 80
+        else:
+            is_online = False
+        user_status = {'user_id': user.id, 'is_online': is_online}
+        users_status.append(user_status)
+    return JsonResponse(users_status, safe=False)
 
 def lougoutUser(request):
     logout(request)
@@ -109,15 +122,15 @@ def userProfile(request, pk):
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
     topics = Topic.objects.all()
+    is_following = request.user.is_following(user)
     context ={
         'user': user,
         'rooms': rooms,
         'room_messages': room_messages,
         'topics': topics,
-        }
+        'is_following': is_following,
+    }
     return render(request, 'base/profile.html', context)
-
-
 
 
 @login_required(login_url='login')
@@ -217,3 +230,45 @@ def topicsPage(request):
 def activityPage(request):
     room_messages = Message.objects.all()
     return render(request, 'base/activity.html', {'room_messages': room_messages})
+
+@login_required(login_url='login')
+def follow_user(request, pk):
+    # Get the user to be followed
+    user_to_follow = User.objects.get(pk=pk)
+
+    # Check if the current user is already following the user
+    follow_exists = Follow.objects.filter(follower=request.user, followed=user_to_follow).exists()
+
+    if request.method == 'POST':
+        if follow_exists:
+            # If the current user is already following the user, unfollow
+            Follow.objects.filter(follower=request.user, followed=user_to_follow).delete()
+        else:
+            # If the current user is not following the user, follow
+            Follow.objects.create(follower=request.user, followed=user_to_follow)
+
+        return redirect('user-profile', pk=user_to_follow.id)
+
+    context = {
+        'user_to_follow': user_to_follow,
+        'follow_exists': follow_exists,
+    }
+    return redirect('profile', pk=user_to_follow.id)
+
+
+
+@login_required(login_url='login')
+def follow_user(request, pk):
+    user_to_follow = User.objects.get(id=pk)
+    current_user = request.user
+    is_following = request.user.is_following(user_to_follow)
+    if current_user.is_following(user_to_follow):
+        Follow.objects.filter(follower=current_user, followed=user_to_follow).delete()
+    else:
+        Follow.objects.create(follower=current_user, followed=user_to_follow)
+    num_followers = user_to_follow.followers.count()
+    return JsonResponse({'num_followers': num_followers, 'is_following': is_following})
+    
+
+
+#print(check_user_status(1))

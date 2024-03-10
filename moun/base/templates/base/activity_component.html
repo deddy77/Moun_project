@@ -6,9 +6,13 @@
         <div class="activities__box">
             <div class="activities__boxHeader roomListRoom__header">
                 <a href="{% url 'user-profile' message.user.id %}" class="roomListRoom__author">
-                    <div class="avatar avatar--small">
+                    <!-- <div class="avatar avatar--small" id = "user-avatar" data-user-id="{{message.user.id}}">
+                        <img src="{{message.user.avatar.url}}" />
+                    </div> -->
+                    <div class="avatar avatar--small" id="user-avatar-{{message.user.id}}" data-avatar-for="{{message.user.id}}">
                         <img src="{{message.user.avatar.url}}" />
                     </div>
+
                     <p>
                         @{{message.user.username}}
                         <span>{{message.created|timesince}} ago</span>
@@ -36,5 +40,39 @@
         </div>
     {% endfor %}
 </div>
-  
 
+
+
+<script>
+    function checkUserStatus() {
+        fetch('http://localhost:8000/check_user_status/')
+            .then(response => response.json())
+            .then(data => {
+                let online_users = [];
+                for (let userStatus of data) {
+                    if (userStatus.is_online) {
+                        online_users.push(userStatus.user_id);
+                    }
+                }
+                console.log(online_users);
+
+                // Get all avatar elements
+                let avatars = document.querySelectorAll('[data-avatar-for]');
+                avatars.forEach(avatar => {
+                    // Get the user ID from the avatar element's data-avatar-for attribute
+                    let userId = parseInt(avatar.dataset.avatarFor, 10);
+                    if (online_users.includes(userId)) {
+                        // Add the 'active' class if the user is online
+                        avatar.classList.add('active');
+                    } else {
+                        // Remove the 'active' class if the user is offline
+                        avatar.classList.remove('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Check user status every 5 seconds
+    setInterval(checkUserStatus, 8000);
+</script>

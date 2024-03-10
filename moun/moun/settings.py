@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,6 +49,13 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'base.User'
 
+CELERY_BEAT_SCHEDULE = {
+    'check_user_status_every_8_minutes': {
+        'task': 'base.tasks.check_user_status_task',
+        'schedule': timedelta(minutes=1),
+    },
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,6 +68,8 @@ MIDDLEWARE = [
 
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+
+    'base.middleware.ActiveUserMiddleware',  # <-- Add this line
 ]
 
 ROOT_URLCONF = 'moun.urls'
@@ -150,4 +159,4 @@ MEDIA_ROOT = BASE_DIR / 'static/images'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CORS_ALLOWE_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True

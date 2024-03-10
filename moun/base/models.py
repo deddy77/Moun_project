@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils import timezone
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -33,8 +34,6 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-
-
 class User(AbstractBaseUser):
     name = models.CharField(max_length=200, null=True)
     email = models.EmailField(unique=True, null=True)
@@ -47,6 +46,7 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    last_activity = models.DateTimeField(default=timezone.now)
     objects = CustomUserManager()
 
     # Required fields for custom user model
@@ -64,10 +64,12 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
+    def update_last_activity(self):
+        self.last_activity = timezone.now()
+        self.save()
 
-
-
-
+    def is_following(self, user):
+        return self.following.filter(followed=user).exists()
 
 
 class Topic(models.Model):
@@ -75,8 +77,7 @@ class Topic(models.Model):
     
     def __str__(self):
         return self.name
-
-
+    
 
 class Room(models.Model):
     host = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
@@ -92,8 +93,7 @@ class Room(models.Model):
 
     def __str__(self):
         return self.name
-    
-
+  
 class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
@@ -106,3 +106,15 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+    
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    followed = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    date_followed = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('follower', 'followed')
+
+    def __str__(self):
+        return f'{self.follower.username} follows {self.followed.username}'

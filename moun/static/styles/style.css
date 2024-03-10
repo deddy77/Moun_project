@@ -62,6 +62,7 @@ a {
   text-decoration: none;
 }
 
+
 /*========== components ==========*/
 .container {
   max-width: 120rem;
@@ -852,6 +853,9 @@ a {
 /*==============================
 =>  Profile
 ================================*/
+
+
+
 .profile {
   margin-bottom: 3rem;
 }
@@ -870,11 +874,14 @@ a {
   font-weight: 400;
 }
 
+
+
 .profile__info p {
   color: var(--color-main);
   font-weight: 500;
   margin-bottom: 1rem;
 }
+
 
 .profile__about {
   margin-top: 2rem;
@@ -1162,4 +1169,10 @@ a {
   font-weight: 500;
   color: var(--color-main);
   font-weight: 1.4rem;
+}
+
+
+#followers {
+  color: white !important;
+  font-weight: 400;
 }
