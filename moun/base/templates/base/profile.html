@@ -10,13 +10,16 @@
         <div class="roomList">
           <div class="profile">
             <div class="profile__avatar">
-              <div class="avatar avatar--large active">
+              <div class="avatar avatar--large" data-avatar-for="{{user.id}}">
                 <img src="{{ user.avatar.url }}" />
               </div>
             </div>
             <div class="profile__info">
               <h3>{{user.name}}</h3>
-              <p>@{{user.username}}<span style="color: #b2bdbd;; font-size: 14px;"><span id="follow-count"> 459</span> Followers</span></p>
+              <p>@{{user.username}} 
+                <!-- <span style="color: #b2bdbd;; font-size: 14px;" id="followers">459</span> -->
+                <span style="color: #b2bdbd;; font-size: 14px;"  id="followers_count"> </span>
+                <span style="color: #b2bdbd;; font-size: 14px;"> Followers</span></p>
               
               {% if request.user == user %}
                   <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
@@ -56,28 +59,118 @@
         <!-- Activities End -->
       </div>
     </main>
-{% endblock content %}  
 
-<script>
-  $(document).ready(function(){
-      $("#follow-form").on('submit', function(event){
-          event.preventDefault();
-          $.ajax({
-              url: $(this).attr('action'),
-              type: $(this).attr('method'),
-              data: $(this).serialize(),
-              dataType: 'json',
-              success: function(response) {
-                  // Update the follower count on the page
-                  $('#follow-count').text(response.num_followers);
-                  // Update the follow button text
-                  if (response.is_following) {
-                      $('#follow-button').text('Unfollow');
-                  } else {
-                      $('#follow-button').text('Follow');
+
+    <script>
+      function checkUserStatus() {
+          fetch('http://localhost:8000/check_user_status/')
+              .then(response => response.json())
+              .then(data => {
+                  let online_users = [];
+                  for (let userStatus of data) {
+                      if (userStatus.is_online) {
+                          online_users.push(userStatus.user_id);
+                      }
                   }
-              }
-          });
-      });
-  });
-  </script>
+                  // console.log(online_users);
+    
+                  // Get all avatar elements
+                  let avatars = document.querySelectorAll('[data-avatar-for]');
+                  avatars.forEach(avatar => {
+                      // Get the user ID from the avatar element's data-avatar-for attribute
+                      let userId = parseInt(avatar.dataset.avatarFor, 10);
+                      if (online_users.includes(userId)) {
+                          // Add the 'active' class if the user is online
+                          avatar.classList.add('active');
+                      } else {
+                          // Remove the 'active' class if the user is offline
+                          avatar.classList.remove('active');
+                      }
+                  });
+              })
+              .catch(error => console.error('Error:', error));
+      }
+ 
+      
+      async function fetchFollowData() {
+        var userId = Number("{{ user.id }}");  // Get user.id from Django and convert it to a number
+        try {
+            let response = await fetch('/get_follow_data/' + userId + '/');  // Use userId in the URL
+            let data = await response.json();
+            document.getElementById('followers_count').textContent = ' ' + data.num_followers;  // Use userId to access the data
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+      // Check user status every 5 seconds
+    setInterval(checkUserStatus, 8000);
+    fetchFollowData();
+    
+// Get the form and add an event listener for the submit event
+var form = document.getElementById('follow-form');
+    form.addEventListener('submit', function(event) {
+        // Prevent the form from being submitted
+        event.preventDefault();
+
+        // Get the follow button
+        var followButton = document.getElementById('follow-button');
+
+        // Send a POST request to the server
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams(new FormData(form))
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update the follow button text
+            if (data.follow_exists) {
+                followButton.textContent = 'Unfollow';
+            } else {
+                followButton.textContent = 'Follow';
+            }
+
+            // Fetch follow data
+            fetchFollowData();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+      // Fetch follow data every 80 seconds    
+    setInterval(fetchFollowData, 80000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+    
+    {% endblock content %}  
+

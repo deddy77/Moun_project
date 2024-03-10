@@ -246,14 +246,14 @@ def follow_user(request, pk):
         else:
             # If the current user is not following the user, follow
             Follow.objects.create(follower=request.user, followed=user_to_follow)
+        
+        followers_count = Follow.objects.filter(followed=user_to_follow).count()
 
-        return redirect('user-profile', pk=user_to_follow.id)
+        return JsonResponse({'followers_count': followers_count, 'follow_exists': not follow_exists})
 
-    context = {
-        'user_to_follow': user_to_follow,
-        'follow_exists': follow_exists,
-    }
-    return redirect('profile', pk=user_to_follow.id)
+    
+
+
 
 
 
@@ -261,14 +261,56 @@ def follow_user(request, pk):
 def follow_user(request, pk):
     user_to_follow = User.objects.get(id=pk)
     current_user = request.user
-    is_following = request.user.is_following(user_to_follow)
-    if current_user.is_following(user_to_follow):
-        Follow.objects.filter(follower=current_user, followed=user_to_follow).delete()
-    else:
-        Follow.objects.create(follower=current_user, followed=user_to_follow)
-    num_followers = user_to_follow.followers.count()
-    return JsonResponse({'num_followers': num_followers, 'is_following': is_following})
-    
+
+    # Prevent a user from following themselves
+    if current_user == user_to_follow:
+        return JsonResponse({'error': 'A user cannot follow themselves.'}, status=400)
+
+    # Check if the current user is following the user_to_follow
+    is_following = Follow.objects.filter(follower=current_user, followed=user_to_follow).exists()
+
+    if request.method == 'POST':
+        if is_following:
+            # If the current user is already following the user, unfollow
+            Follow.objects.filter(follower=current_user, followed=user_to_follow).delete()
+            is_following = False
+        else:
+            # If the current user is not following the user, follow
+            Follow.objects.create(follower=current_user, followed=user_to_follow)
+            is_following = True
+
+    # Get the number of followers of the user_to_follow
+    followers = Follow.objects.filter(followed=user_to_follow)
+    num_followers = followers.count()
+
+    return JsonResponse({user_to_follow.id: {'num_followers': num_followers, 'is_following': is_following}})
+
+
+@login_required(login_url='login')
+def get_follow_data(request, pk):
+    user = User.objects.get(id=pk)
+    num_followers = Follow.objects.filter(followed=user).count()
+    is_following = Follow.objects.filter(follower=request.user, followed=user).exists()
+
+    # Create a dictionary that includes only the fields you want to include in the response
+    user_data = {
+        'id': user.id,
+        'username': user.username,
+        # 'first_name': user.first_name,
+        # 'last_name': user.last_name,
+        # 'email': user.email,
+        # 'date_joined': user.date_joined,
+        # Add any other fields you want to include
+    }
+
+    return JsonResponse({
+        
+        'num_followers': num_followers,
+       
+    })
+
+
+
 
 
 #print(check_user_status(1))

@@ -26,9 +26,11 @@ urlpatterns = [
     path('check_user_status/', views.check_user_status),
 
     path('follow/<int:pk>/', views.follow_user, name='follow-user'),
-    #path('is_following/<int:pk>/', views.is_following, name='is-following'),
+    path('get_follow_data/<int:pk>/', views.get_follow_data, name='get_follow_data'),    
 
     path('activity/', views.activityPage, name='activity'),
+
+
 
     
 ]
