@@ -34,20 +34,21 @@
               {% endif %}
           </div>
             <div class="profile__about">
-              <h3>About</h3>
+              <h3>ABOUT</h3>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur illo tenetur
-                facilis sunt nemo debitis quisquam hic atque aut? Ducimus alias placeat optio
-                accusamus repudiandae quis ab ex exercitationem rem?
+                {{user.bio}}
               </p>
             </div>
           </div>
 
           <div class="roomList__header">
-            <div>
-              <h2>Rooms Hosted by dennis_ivy</a>
+            {% if request.user == user %}
+              <h2>Your Rooms</h2>
+            {% else %}
+              <h2>Rooms Hosted by {{user.name}}</a>
               </h2>
-            </div>
+            {% endif %}
+            
           </div>
           
           {% include 'base/feed_component.html' %} 

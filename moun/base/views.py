@@ -17,6 +17,10 @@ from django.views.decorators.http import require_http_methods
 #     {'id':3, 'name':'HMI'},
 # ]
 
+
+
+
+
 def loginPage(request):
     page ='login'
 
@@ -308,6 +312,7 @@ def get_follow_data(request, pk):
         'num_followers': num_followers,
        
     })
+
 
 
 

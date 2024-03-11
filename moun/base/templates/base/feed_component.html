@@ -2,7 +2,7 @@
     <div class="roomListRoom">
     <div class="roomListRoom__header">
       <a href="{% url 'user-profile' room.host.id %}" class="roomListRoom__author">
-        <div class="avatar avatar--small">
+        <div data-user-id="{{ room.host.id }}" class="avatar avatar--small">
           <img src="{{room.host.avatar.url}}" />
         </div>
         <span>@{{room.host.username}}</span>
@@ -14,6 +14,18 @@
     <div class="roomListRoom__content">
       <a href="{% url 'room' room.id %}">{{room.name}}</a>
     </div>
+    
+     <!-- Add the participants list here -->
+     <div style="display: flex;">
+      {% for user in room.participants.all %}
+          <a href="{% url 'user-profile' user.id %}" class="participant">
+              <div  data-user-id ="{{user.id}}" style="margin-right: 10px;" class="avatar avatar--medium">
+                  <img src="{{user.avatar.url}}" />
+              </div>
+          </a>
+      {% endfor %}
+      </div>
+    
     <div class="roomListRoom__meta">
       <a href="{% url 'room' room.id %}" class="roomListRoom__joined">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -40,3 +52,40 @@
 
 
 
+
+
+
+
+
+<script>
+  function checkUserStatus() {
+    fetch('http://localhost:8000/check_user_status/')
+        .then(response => response.json())
+        .then(data => {
+            let online_users = [];
+            for (let userStatus of data) {
+                if (userStatus.is_online) {
+                    online_users.push(userStatus.user_id);
+                }
+            }
+
+            // Get all avatar divs
+            let avatarDivs = document.querySelectorAll('[data-user-id]');
+            avatarDivs.forEach(avatarDiv => {
+                // Get the user ID from the div's data-user-id attribute
+                let userId = parseInt(avatarDiv.dataset.userId, 10);
+                if (online_users.includes(userId)) {
+                    // Add the 'active' class if the user is online
+                    avatarDiv.classList.add('active');
+                } else {
+                    // Remove the 'active' class if the user is offline
+                    avatarDiv.classList.remove('active');
+                }
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Check user status every 8 seconds
+setInterval(checkUserStatus, 8000);
+</script>
