@@ -127,16 +127,20 @@ var form = document.getElementById('follow-form');
         })
         .then(response => response.json())
         .then(data => {
-            // Update the follow button text
-            if (data.follow_exists) {
-                followButton.textContent = 'Unfollow';
-            } else {
-                followButton.textContent = 'Follow';
-            }
+    // testing the data sent
+    console.log(data);
+    // Get the first key from the data object
+    var firstKey = Object.keys(data)[0];
+    // Update the follow button text
+    if (data[firstKey].is_following) {
+        followButton.textContent = 'Unfollow';
+    } else {
+        followButton.textContent = 'Follow';
+    }
 
-            // Fetch follow data
-            fetchFollowData();
-        })
+    // Fetch follow data
+    fetchFollowData();
+})
         .catch(error => console.error('Error:', error));
     });
 
