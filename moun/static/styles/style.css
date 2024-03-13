@@ -727,6 +727,17 @@ a {
   font-size: 1.3rem;
 }
 
+.roomListRoom__topica {
+  padding: 5px 1.5rem;
+  background-color: var(--color-success);
+  border-radius: 5rem;
+  font-weight: 500;
+  font-size: 1.3rem;
+  font-color: var(--color-dark);
+}
+
+
+
 /*==============================
 =>  Activities
 ================================*/
@@ -1170,4 +1181,5 @@ a {
   color: var(--color-main);
   font-weight: 1.4rem;
 }
+
 
