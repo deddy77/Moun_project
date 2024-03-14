@@ -733,7 +733,16 @@ a {
   border-radius: 5rem;
   font-weight: 500;
   font-size: 1.3rem;
-  font-color: var(--color-dark);
+  color: var(--color-main);
+}
+
+.roomListRoom__topicb {
+  padding: 5px 1.5rem;
+  background-color: var(--color-error);
+  border-radius: 5rem;
+  font-weight: 500;
+  font-size: 1.3rem;
+  color: var(--color-main);
 }
 
 
