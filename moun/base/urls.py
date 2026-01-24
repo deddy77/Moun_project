@@ -32,6 +32,11 @@ urlpatterns = [
 
     path('activity/', views.activityPage, name='activity'),
 
+    # Direct Messaging URLs
+    path('inbox/', views.inbox, name='inbox'),
+    path('conversation/<str:pk>/', views.conversation_detail, name='conversation'),
+    path('start-conversation/<str:user_pk>/', views.start_conversation, name='start-conversation'),
+
 
 
     

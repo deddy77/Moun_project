@@ -22,15 +22,18 @@
                 <span style="color: #b2bdbd;; font-size: 14px;"> Followers</span></p>
               
               {% if request.user == user %}
+                  <a href="{% url 'inbox' %}" class="btn btn--sub btn--pill" style="margin-right: 0.5rem;">📬 Inbox</a>
                   <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
               {% else %}
-                <form id="follow-form" method="POST" action="{% url 'follow-user' user.id %}">
+                <a href="{% url 'start-conversation' user.id %}" class="btn btn--sub btn--pill" style="margin-right: 0.5rem;">Send Message</a>
+                <form id="follow-form" method="POST" action="{% url 'follow-user' user.id %}" style="display: inline;">
                   {% csrf_token %}
                     {% if is_following %}
                       <button id="follow-button" class="btn btn--main btn--pill">Unfollow</button>
                     {% else %}
                       <button id="follow-button" class="btn btn--main btn--pill">Follow</button>
                     {% endif %}
+                </form>
               {% endif %}
           </div>
             <div class="profile__about">

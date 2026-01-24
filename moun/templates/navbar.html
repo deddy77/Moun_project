@@ -17,6 +17,13 @@
 
         <!-- Logged In -->
         {% if request.user.is_authenticated %}
+        <!-- Messages Icon -->
+        <a href="{% url 'inbox' %}" class="header__link" style="margin-right: 1.5rem; position: relative;">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" style="fill: currentColor;">
+            <title>Messages</title>
+            <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM8 8h16c0.286 0 0.563 0.061 0.817 0.177l-8.817 8.817-8.817-8.817c0.254-0.116 0.531-0.177 0.817-0.177zM6 22v-12c0-0.042 0.002-0.084 0.004-0.125l5.864 5.864-5.815 5.815c-0.034-0.179-0.054-0.362-0.054-0.554zM24 24h-16c-0.192 0-0.375-0.019-0.554-0.054l5.815-5.815 2.739 2.739 2.739-2.739 5.815 5.815c-0.179 0.034-0.362 0.054-0.554 0.054zM26 22c0 0.192-0.019 0.375-0.054 0.554l-5.815-5.815 5.865-5.865c0.003 0.042 0.004 0.084 0.004 0.125v12z"></path>
+          </svg>
+        </a>
         <div class="header__user">
           <a href="{% url 'user-profile' request.user.id %}">  
             <div class="avatar avatar--medium active">
@@ -45,6 +52,12 @@
 
 
         <div class="dropdown-menu">
+          <a href="{% url 'inbox' %}" class="dropdown-link"
+            ><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+              <title>mail</title>
+              <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM8 8h16c0.286 0 0.563 0.061 0.817 0.177l-8.817 8.817-8.817-8.817c0.254-0.116 0.531-0.177 0.817-0.177zM6 22v-12c0-0.042 0.002-0.084 0.004-0.125l5.864 5.864-5.815 5.815c-0.034-0.179-0.054-0.362-0.054-0.554zM24 24h-16c-0.192 0-0.375-0.019-0.554-0.054l5.815-5.815 2.739 2.739 2.739-2.739 5.815 5.815c-0.179 0.034-0.362 0.054-0.554 0.054zM26 22c0 0.192-0.019 0.375-0.054 0.554l-5.815-5.815 5.865-5.865c0.003 0.042 0.004 0.084 0.004 0.125v12z"></path>
+            </svg>
+            Messages</a>
           <a href="{% url 'update-user' %}" class="dropdown-link"
             ><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
               <title>tools</title>

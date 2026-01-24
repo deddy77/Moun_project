@@ -118,3 +118,39 @@ class Follow(models.Model):
 
     def __str__(self):
         return f'{self.follower.username} follows {self.followed.username}'
+
+
+class Conversation(models.Model):
+    participants = models.ManyToManyField(User, related_name='conversations')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated']
+
+    def __str__(self):
+        usernames = [user.username for user in self.participants.all()]
+        return f"Conversation between {', '.join(usernames)}"
+    
+    def get_other_participant(self, user):
+        """Get the other participant in a 1-on-1 conversation"""
+        return self.participants.exclude(id=user.id).first()
+    
+    def last_message(self):
+        """Get the most recent message in this conversation"""
+        return self.direct_messages.order_by('-created').first()
+
+
+class DirectMessage(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='direct_messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    body = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+
+    def __str__(self):
+        return f'{self.sender.username}: {self.body[:50]}'

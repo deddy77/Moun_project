@@ -6,7 +6,8 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from .models import Room, Topic, Message, User, Follow
+from django.shortcuts import get_object_or_404
+from .models import Room, Topic, Message, User, Follow, Conversation, DirectMessage
 from .forms import RoomForm, UserForm, MyUserCreationForm
 from django.views.decorators.http import require_http_methods
 # Create your views here.
@@ -313,9 +314,96 @@ def get_follow_data(request, pk):
        
     })
 
+@login_required
+def leave_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    room.participants.remove(request.user)
+    return JsonResponse({'status': 'ok'})
 
 
+# Direct Messaging Views
+@login_required
+def inbox(request):
+    """View all conversations for the logged-in user"""
+    conversations = request.user.conversations.all()
+    
+    # Annotate with unread count
+    conversations_data = []
+    for conv in conversations:
+        other_user = conv.get_other_participant(request.user)
+        last_msg = conv.last_message()
+        unread_count = conv.direct_messages.filter(is_read=False).exclude(sender=request.user).count()
+        
+        conversations_data.append({
+            'conversation': conv,
+            'other_user': other_user,
+            'last_message': last_msg,
+            'unread_count': unread_count
+        })
+    
+    context = {'conversations_data': conversations_data}
+    return render(request, 'base/inbox.html', context)
 
+
+@login_required
+def conversation_detail(request, pk):
+    """View a specific conversation and send messages"""
+    conversation = get_object_or_404(Conversation, id=pk)
+    
+    # Ensure the user is a participant
+    if request.user not in conversation.participants.all():
+        messages.error(request, 'You do not have access to this conversation')
+        return redirect('inbox')
+    
+    # Mark messages as read
+    conversation.direct_messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
+    
+    # Handle message sending
+    if request.method == 'POST':
+        body = request.POST.get('body')
+        if body:
+            DirectMessage.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                body=body
+            )
+            return redirect('conversation', pk=pk)
+    
+    messages_list = conversation.direct_messages.all()
+    other_user = conversation.get_other_participant(request.user)
+    
+    context = {
+        'conversation': conversation,
+        'messages': messages_list,
+        'other_user': other_user
+    }
+    return render(request, 'base/conversation.html', context)
+
+
+@login_required
+def start_conversation(request, user_pk):
+    """Start a new conversation with a user or redirect to existing one"""
+    other_user = get_object_or_404(User, id=user_pk)
+    
+    if other_user == request.user:
+        messages.error(request, 'You cannot message yourself')
+        return redirect('home')
+    
+    # Check if conversation already exists
+    existing_conv = Conversation.objects.filter(
+        participants=request.user
+    ).filter(
+        participants=other_user
+    ).first()
+    
+    if existing_conv:
+        return redirect('conversation', pk=existing_conv.id)
+    
+    # Create new conversation
+    conversation = Conversation.objects.create()
+    conversation.participants.add(request.user, other_user)
+    
+    return redirect('conversation', pk=conversation.id)
 
 
 #print(check_user_status(1))

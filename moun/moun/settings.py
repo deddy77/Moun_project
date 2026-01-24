@@ -25,7 +25,16 @@ SECRET_KEY = 'django-insecure-k0duy_4y&17un$ahbz5wf8vqu_a-ftb%=1l1gn!+%r-_qa)*9s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'especially-super-kid.ngrok-free.app'
+]
+
+# CSRF Settings for HTTPS/ngrok
+CSRF_TRUSTED_ORIGINS = [
+    'https://especially-super-kid.ngrok-free.app'
+]
 
 
 # Application definition
@@ -149,6 +158,12 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = BASE_DIR / 'static/images'
 #STATIC_ROOT =
+
+# PWA Configuration
+# Ensure service worker and manifest are served with correct MIME types
+import mimetypes
+mimetypes.add_type("application/javascript", ".js", True)
+mimetypes.add_type("application/manifest+json", ".json", True)
 
 
 

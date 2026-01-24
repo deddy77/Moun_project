@@ -1,0 +1,146 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .inbox-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .inbox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .inbox-header h1 {
+        font-size: 2rem;
+        color: #1f2937;
+    }
+
+    .conversations-list {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .conversation-item {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        border-bottom: 1px solid #f3f4f6;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.2s;
+    }
+
+    .conversation-item:hover {
+        background: #f9fafb;
+    }
+
+    .conversation-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 1rem;
+        object-fit: cover;
+        background: #e5e7eb;
+    }
+
+    .conversation-info {
+        flex: 1;
+    }
+
+    .conversation-user {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .conversation-preview {
+        color: #6b7280;
+        font-size: 0.9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .unread-badge {
+        background: #3B82F6;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .empty-inbox {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+    }
+
+    .empty-inbox-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="inbox-container">
+    <div class="inbox-header">
+        <h1>📬 Messages</h1>
+    </div>
+
+    {% if conversations_data %}
+        <div class="conversations-list">
+            {% for item in conversations_data %}
+                <a href="{% url 'conversation' item.conversation.id %}" class="conversation-item">
+                    {% if item.other_user.avatar %}
+                        <img src="{{ item.other_user.avatar.url }}" alt="{{ item.other_user.username }}" class="user-avatar">
+                    {% else %}
+                        <div class="user-avatar"></div>
+                    {% endif %}
+                    
+                    <div class="conversation-info">
+                        <div class="conversation-user">
+                            {{ item.other_user.username }}
+                            {% if item.unread_count > 0 %}
+                                <span class="unread-badge">{{ item.unread_count }}</span>
+                            {% endif %}
+                        </div>
+                        {% if item.last_message %}
+                            <div class="conversation-preview">
+                                {% if item.last_message.sender == request.user %}You: {% endif %}
+                                {{ item.last_message.body|truncatewords:10 }}
+                            </div>
+                        {% else %}
+                            <div class="conversation-preview">No messages yet</div>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-inbox">
+            <div class="empty-inbox-icon">💬</div>
+            <h2>No conversations yet</h2>
+            <p>Start chatting by visiting someone's profile and clicking "Send Message"</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

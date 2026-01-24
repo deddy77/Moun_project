@@ -48,7 +48,7 @@
       {% if request.user in room.participants.all %}
       <p class="roomListRoom__topicb">Leave Room</p> 
       {% else %}
-      <p class="roomListRoom__topica">Join Room</p>
+      <p class="roomListRoom__topic">Join Room</p>
       {% endif %}
       <p class="roomListRoom__topic">{{room.topic.name}}</p>
     </div>
@@ -93,4 +93,31 @@
 
 // Check user status every 8 seconds
 setInterval(checkUserStatus, 8000);
+
+
+// handleing button for leving room
+document.querySelectorAll('.roomListRoom__topicb').forEach(button => {
+    button.addEventListener('click', function() {
+        let room_id = this.dataset.roomId;  // Assuming each button has a data-room-id attribute with the room's ID
+        fetch(`/leave_room/${room_id}/`, {  // Replace with the actual URL of the leave_room view
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')  // Replace getCookie with a function that gets the CSRF token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                // Remove the user's avatar from the participants list
+                let avatar = document.querySelector(`[data-user-id="${request.user.id}"]`);
+                avatar.parentNode.removeChild(avatar);
+                // Change the "Leave Room" button to "Join Room"
+                this.textContent = 'Join Room';
+                this.classList.remove('roomListRoom__topicb');
+                this.classList.add('roomListRoom__topic');
+            }
+        });
+    });
+});
+
 </script>

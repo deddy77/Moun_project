@@ -5,8 +5,24 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Stay connected with people that matter" />
+    <meta name="theme-color" content="#3B82F6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Together" />
+    
+    <!-- Icons and Manifest -->
     <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="{% static 'manifest.json' %}" />
+    <link rel="apple-touch-icon" href="{% static 'images/icons/android/android-launchericon-192-192.png' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/icons/android/android-launchericon-192-192.png' %}" />
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/icons/android/android-launchericon-192-192.png' %}" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/icons/android/android-launchericon-192-192.png' %}" />
+    
     <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/pwa-install.css' %}" />
     <title>together - Stick to people!</title>
   </head>
 
@@ -24,5 +40,23 @@
     {% block content %}
     {% endblock %}
     <script src="{% static 'js/script.js' %}"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/static/js/service-worker.js')
+            .then((registration) => {
+              console.log('Service Worker registered successfully:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
+    
+    <!-- PWA Install Prompt -->
+    <script src="{% static 'js/pwa-install-prompt.js' %}"></script>
   </body>
 </html>
