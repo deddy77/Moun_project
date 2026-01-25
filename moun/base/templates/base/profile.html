@@ -25,7 +25,7 @@
                   <a href="{% url 'inbox' %}" class="btn btn--sub btn--pill" style="margin-right: 0.5rem;">📬 Inbox</a>
                   <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
               {% else %}
-                <a href="{% url 'start-conversation' user.id %}" class="btn btn--sub btn--pill" style="margin-right: 0.5rem;">Send Message</a>
+                <a href="#" id="send-message-btn" data-user-id="{{ user.id }}" class="btn btn--sub btn--pill" style="margin-right: 0.5rem;">Send Message</a>
                 <form id="follow-form" method="POST" action="{% url 'follow-user' user.id %}" style="display: inline;">
                   {% csrf_token %}
                     {% if is_following %}
@@ -65,9 +65,47 @@
     </main>
 
 
+    <!-- Error Modal -->
+    <div id="error-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 400px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <h3 style="color: #e74c3c; margin-bottom: 1rem;">⚠️ Cannot Send Message</h3>
+            <p id="error-message" style="color: #333; margin-bottom: 1.5rem;"></p>
+            <button onclick="closeErrorModal()" style="background: #3B82F6; color: white; border: none; padding: 0.75rem 2rem; border-radius: 8px; cursor: pointer; font-size: 1rem;">OK</button>
+        </div>
+    </div>
+
     <script>
+      function showErrorModal(message) {
+          document.getElementById('error-message').textContent = message;
+          document.getElementById('error-modal').style.display = 'flex';
+      }
+
+      function closeErrorModal() {
+          document.getElementById('error-modal').style.display = 'none';
+      }
+
+      // Handle Send Message button click
+      document.getElementById('send-message-btn')?.addEventListener('click', function(e) {
+          e.preventDefault();
+          const userId = this.dataset.userId;
+          
+          fetch('/start-conversation/' + userId + '/')
+              .then(response => response.json())
+              .then(data => {
+                  if (data.error) {
+                      showErrorModal(data.error);
+                  } else if (data.success && data.redirect) {
+                      window.location.href = data.redirect;
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  showErrorModal('An error occurred. Please try again.');
+              });
+      });
+
       function checkUserStatus() {
-          fetch('http://localhost:8000/check_user_status/')
+          fetch('/check_user_status/')
               .then(response => response.json())
               .then(data => {
                   let online_users = [];
@@ -78,17 +116,25 @@
                   }
                   // console.log(online_users);
     
-                  // Get all avatar elements
+                  // Get all avatar elements with data-avatar-for
                   let avatars = document.querySelectorAll('[data-avatar-for]');
                   avatars.forEach(avatar => {
-                      // Get the user ID from the avatar element's data-avatar-for attribute
                       let userId = parseInt(avatar.dataset.avatarFor, 10);
                       if (online_users.includes(userId)) {
-                          // Add the 'active' class if the user is online
                           avatar.classList.add('active');
                       } else {
-                          // Remove the 'active' class if the user is offline
                           avatar.classList.remove('active');
+                      }
+                  });
+
+                  // Also get all avatar elements with data-user-id
+                  let avatarDivs = document.querySelectorAll('[data-user-id]');
+                  avatarDivs.forEach(avatarDiv => {
+                      let userId = parseInt(avatarDiv.dataset.userId, 10);
+                      if (online_users.includes(userId)) {
+                          avatarDiv.classList.add('active');
+                      } else {
+                          avatarDiv.classList.remove('active');
                       }
                   });
               })

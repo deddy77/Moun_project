@@ -41,18 +41,82 @@
     {% endblock %}
     <script src="{% static 'js/script.js' %}"></script>
     
+    <!-- Offline Storage -->
+    <script src="{% static 'js/offline-storage.js' %}"></script>
+    <script src="{% static 'js/offline-integration.js' %}"></script>
+    <script src="{% static 'js/precache-user-data.js' %}"></script>
+    <script src="{% static 'js/pwa-debug.js' %}"></script>
+    
+    <!-- Real-time Message Notifications -->
+    {% if request.user.is_authenticated %}
+    <script src="{% static 'js/message-notifications.js' %}"></script>
+    {% endif %}
+    
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/static/js/service-worker.js')
+          // Register at root path (served by Django view)
+          navigator.serviceWorker.register('/service-worker.js')
             .then((registration) => {
-              console.log('Service Worker registered successfully:', registration.scope);
+              console.log('[PWA] ✅ Service Worker registered successfully');
+              console.log('[PWA] Scope:', registration.scope);
+              console.log('[PWA] Active:', !!registration.active);
+              console.log('[PWA] Installing:', !!registration.installing);
+              console.log('[PWA] Waiting:', !!registration.waiting);
+              
+              if (registration.active) {
+                console.log('[PWA] State:', registration.active.state);
+              }
+              
+              // Check for updates every 60 seconds
+              setInterval(() => {
+                registration.update();
+              }, 60000);
+              
+              // Handle updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                console.log('[PWA] New Service Worker found, installing...');
+                
+                newWorker.addEventListener('statechange', () => {
+                  console.log('[PWA] Service Worker state changed to:', newWorker.state);
+                  
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[PWA] New Service Worker installed, ready to activate');
+                    // Tell the new service worker to take over immediately
+                    newWorker.postMessage({ action: 'skipWaiting' });
+                  }
+                  
+                  if (newWorker.state === 'activated') {
+                    console.log('[PWA] ✅ New Service Worker activated!');
+                    // Reload the page to use the new service worker
+                    console.log('[PWA] Reloading page...');
+                    setTimeout(() => window.location.reload(), 100);
+                  }
+                });
+              });
             })
             .catch((error) => {
-              console.log('Service Worker registration failed:', error);
+              console.error('[PWA] ❌ Service Worker registration failed:', error);
+              console.error('[PWA] Error details:', error.message);
             });
+            
+          // Handle controller change (new service worker activated)
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('[PWA] Service Worker controller changed');
+          });
         });
+        
+        // Log current service worker status on ready
+        navigator.serviceWorker.ready.then(registration => {
+          console.log('[PWA] ✅ Service Worker is ready and active');
+          console.log('[PWA] Active worker:', !!registration.active);
+        }).catch(err => {
+          console.error('[PWA] Service Worker ready failed:', err);
+        });
+      } else {
+        console.warn('[PWA] ❌ Service Workers not supported in this browser');
       }
     </script>
     

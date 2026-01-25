@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 from .models import Room, Topic, Message, User, Follow, Conversation, DirectMessage
 from .forms import RoomForm, UserForm, MyUserCreationForm
 from django.views.decorators.http import require_http_methods
@@ -50,7 +51,22 @@ def loginPage(request):
 
 def check_user_status(request):
     users_status = []
-    for user in User.objects.all():
+    
+    # Get mutual followers (users who follow each other)
+    if request.user.is_authenticated:
+        # Get IDs of users who follow the current user
+        follower_ids = set(Follow.objects.filter(followed=request.user).values_list('follower_id', flat=True))
+        # Get IDs of users whom the current user follows
+        following_ids = set(Follow.objects.filter(follower=request.user).values_list('followed_id', flat=True))
+        # Find mutual followers (intersection)
+        mutual_follow_ids = follower_ids.intersection(following_ids)
+        # Only check status for mutual followers
+        users_to_check = User.objects.filter(id__in=mutual_follow_ids)
+    else:
+        # If not authenticated, return empty list
+        users_to_check = User.objects.none()
+    
+    for user in users_to_check:
         last_activity = user.last_activity.timestamp() if user.last_activity else None
         if last_activity:
             is_online = timezone.now().timestamp() - last_activity < 80
@@ -100,6 +116,7 @@ def home(request):
     }
     return render(request, 'base/home.html', context)
 
+@login_required(login_url='login')
 def room(request, pk):
     room = Room.objects.get(id=pk)
     room_messages = room.message_set.all()
@@ -123,6 +140,9 @@ def room(request, pk):
     return render(request, 'base/room.html', context)
 
 def userProfile(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
@@ -232,35 +252,10 @@ def topicsPage(request):
                    {'topics': topics},
                      )
 
+@login_required(login_url='login')
 def activityPage(request):
     room_messages = Message.objects.all()
     return render(request, 'base/activity.html', {'room_messages': room_messages})
-
-@login_required(login_url='login')
-def follow_user(request, pk):
-    # Get the user to be followed
-    user_to_follow = User.objects.get(pk=pk)
-
-    # Check if the current user is already following the user
-    follow_exists = Follow.objects.filter(follower=request.user, followed=user_to_follow).exists()
-
-    if request.method == 'POST':
-        if follow_exists:
-            # If the current user is already following the user, unfollow
-            Follow.objects.filter(follower=request.user, followed=user_to_follow).delete()
-        else:
-            # If the current user is not following the user, follow
-            Follow.objects.create(follower=request.user, followed=user_to_follow)
-        
-        followers_count = Follow.objects.filter(followed=user_to_follow).count()
-
-        return JsonResponse({'followers_count': followers_count, 'follow_exists': not follow_exists})
-
-    
-
-
-
-
 
 @login_required(login_url='login')
 def follow_user(request, pk):
@@ -362,11 +357,25 @@ def conversation_detail(request, pk):
     if request.method == 'POST':
         body = request.POST.get('body')
         if body:
-            DirectMessage.objects.create(
+            message = DirectMessage.objects.create(
                 conversation=conversation,
                 sender=request.user,
                 body=body
             )
+            
+            # Send WebSocket notification to the recipient
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+            
+            other_user = conversation.get_other_participant(request.user)
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'user_{other_user.id}',
+                {
+                    'type': 'new_message',
+                }
+            )
+            
             return redirect('conversation', pk=pk)
     
     messages_list = conversation.direct_messages.all()
@@ -386,8 +395,19 @@ def start_conversation(request, user_pk):
     other_user = get_object_or_404(User, id=user_pk)
     
     if other_user == request.user:
-        messages.error(request, 'You cannot message yourself')
-        return redirect('home')
+        return JsonResponse({'error': 'You cannot message yourself'}, status=400)
+    
+    # Check if the other user is following the current user
+    is_followed_by_receiver = Follow.objects.filter(follower=other_user, followed=request.user).exists()
+    
+    # Check if the current user is following the other user
+    is_following_receiver = Follow.objects.filter(follower=request.user, followed=other_user).exists()
+    
+    if not is_followed_by_receiver:
+        return JsonResponse({'error': f'{other_user.username} must follow you before you can send them a message'}, status=403)
+    
+    if not is_following_receiver:
+        return JsonResponse({'error': f'You must follow {other_user.username} before you can send them a message'}, status=403)
     
     # Check if conversation already exists
     existing_conv = Conversation.objects.filter(
@@ -397,13 +417,48 @@ def start_conversation(request, user_pk):
     ).first()
     
     if existing_conv:
-        return redirect('conversation', pk=existing_conv.id)
+        return JsonResponse({'success': True, 'redirect': f'/conversation/{existing_conv.id}/'})
     
     # Create new conversation
     conversation = Conversation.objects.create()
     conversation.participants.add(request.user, other_user)
     
-    return redirect('conversation', pk=conversation.id)
+    return JsonResponse({'success': True, 'redirect': f'/conversation/{conversation.id}/'})
+
+
+@login_required
+def api_unread_count(request):
+    """API endpoint for polling unread message count"""
+    unread_count = DirectMessage.objects.filter(
+        conversation__participants=request.user,
+        is_read=False
+    ).exclude(sender=request.user).count()
+    
+    return JsonResponse({'count': unread_count})
+
+
+def offline_page(request):
+    """Offline fallback page"""
+    return render(request, 'offline.html')
+
+
+def service_worker(request):
+    """Serve service worker from root path"""
+    from django.http import HttpResponse
+    import os
+    
+    sw_path = os.path.join(settings.BASE_DIR, 'static', 'js', 'service-worker.js')
+    
+    try:
+        with open(sw_path, 'r', encoding='utf-8') as f:
+            sw_content = f.read()
+        
+        response = HttpResponse(sw_content, content_type='application/javascript')
+        response['Service-Worker-Allowed'] = '/'
+        response['Cache-Control'] = 'no-cache'
+        return response
+    except FileNotFoundError:
+        return HttpResponse('Service worker not found', status=404)
 
 
 #print(check_user_status(1))

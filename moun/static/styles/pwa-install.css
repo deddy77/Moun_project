@@ -156,3 +156,92 @@
         max-height: calc(90vh - env(safe-area-inset-bottom));
     }
 }
+
+/* Offline Indicator Styles */
+#offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+#offline-indicator.show {
+    transform: translateY(0);
+}
+
+#offline-indicator.hidden {
+    transform: translateY(-100%);
+}
+
+#offline-indicator svg {
+    flex-shrink: 0;
+}
+
+/* Network Notification Toast */
+.network-notification {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: white;
+    color: #333;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10001;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease-in-out;
+    max-width: 300px;
+}
+
+.network-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.network-notification.success {
+    background: #27ae60;
+    color: white;
+}
+
+.network-notification.warning {
+    background: #f39c12;
+    color: white;
+}
+
+.network-notification.error {
+    background: #e74c3c;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    #offline-indicator {
+        font-size: 0.85rem;
+        padding: 0.625rem 1rem;
+    }
+
+    .network-notification {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+}
+

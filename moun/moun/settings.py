@@ -36,10 +36,19 @@ CSRF_TRUSTED_ORIGINS = [
     'https://especially-super-kid.ngrok-free.app'
 ]
 
+# WebSocket/Channels settings for ngrok
+# Allow WebSocket connections from ngrok
+ALLOWED_WEBSOCKET_ORIGINS = [
+    'especially-super-kid.ngrok-free.app',
+    'localhost',
+    '127.0.0.1'
+]
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Must be first for Channels
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -96,12 +105,21 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'base.context_processors.unread_messages_count',
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'moun.wsgi.application'
+ASGI_APPLICATION = 'moun.asgi.application'
+
+# Channels Layer (in-memory for development)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 
 # Database

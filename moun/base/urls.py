@@ -36,7 +36,15 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('conversation/<str:pk>/', views.conversation_detail, name='conversation'),
     path('start-conversation/<str:user_pk>/', views.start_conversation, name='start-conversation'),
+    
+    # API endpoint for polling unread messages
+    path('api/unread-count/', views.api_unread_count, name='api-unread-count'),
 
+    # Offline page
+    path('offline/', views.offline_page, name='offline'),
+    
+    # Service Worker (must be at root for full site control)
+    path('service-worker.js', views.service_worker, name='service-worker'),
 
 
     

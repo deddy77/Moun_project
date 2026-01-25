@@ -64,7 +64,7 @@
 
 <script>
   function checkUserStatus() {
-    fetch('http://localhost:8000/check_user_status/')
+    fetch('/check_user_status/')
         .then(response => response.json())
         .then(data => {
             let online_users = [];
