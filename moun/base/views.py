@@ -33,10 +33,6 @@ def loginPage(request):
         username = request.POST.get('username').lower()
         password = request.POST.get('password')
 
-        try:
-            user = User.objects.get(username=username)
-        except:
-            messages.error(request, 'Username does not exist')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -77,6 +73,10 @@ def check_user_status(request):
     return JsonResponse(users_status, safe=False)
 
 def lougoutUser(request):
+    # Clear last_activity to show user as offline immediately
+    if request.user.is_authenticated:
+        request.user.last_activity = None
+        request.user.save()
     logout(request)
     return redirect('login')
 
@@ -322,18 +322,25 @@ def inbox(request):
     """View all conversations for the logged-in user"""
     conversations = request.user.conversations.all()
     
-    # Annotate with unread count
+    # Annotate with unread count and online status
     conversations_data = []
     for conv in conversations:
         other_user = conv.get_other_participant(request.user)
         last_msg = conv.last_message()
         unread_count = conv.direct_messages.filter(is_read=False).exclude(sender=request.user).count()
         
+        # Check if user is online (active within last 5 minutes)
+        is_online = False
+        if other_user.last_activity:
+            time_diff = timezone.now() - other_user.last_activity
+            is_online = time_diff.total_seconds() < 300  # 5 minutes
+        
         conversations_data.append({
             'conversation': conv,
             'other_user': other_user,
             'last_message': last_msg,
-            'unread_count': unread_count
+            'unread_count': unread_count,
+            'is_online': is_online
         })
     
     context = {'conversations_data': conversations_data}
@@ -356,23 +363,60 @@ def conversation_detail(request, pk):
     # Handle message sending
     if request.method == 'POST':
         body = request.POST.get('body')
+        reply_to_id = request.POST.get('reply_to_id')
         if body:
+            reply_to = None
+            if reply_to_id:
+                try:
+                    reply_to = DirectMessage.objects.get(id=reply_to_id, conversation=conversation)
+                except DirectMessage.DoesNotExist:
+                    pass
+            
             message = DirectMessage.objects.create(
                 conversation=conversation,
                 sender=request.user,
-                body=body
+                body=body,
+                reply_to=reply_to
             )
             
-            # Send WebSocket notification to the recipient
+            # Send WebSocket notification to the recipient (for unread count)
             from channels.layers import get_channel_layer
             from asgiref.sync import async_to_sync
             
             other_user = conversation.get_other_participant(request.user)
             channel_layer = get_channel_layer()
+            
+            # Send to recipient's notification channel (for message icon)
             async_to_sync(channel_layer.group_send)(
                 f'user_{other_user.id}',
                 {
                     'type': 'new_message',
+                }
+            )
+            
+            # Send to chat room (for real-time conversation updates)
+            message_data = {
+                'id': message.id,
+                'body': message.body,
+                'sender_id': message.sender.id,
+                'sender_username': message.sender.username,
+                'sender_avatar': message.sender.avatar.url if message.sender.avatar else None,
+                'created': message.created.strftime('%b %d, %I:%M %p'),
+                'reply_to': None
+            }
+            
+            if message.reply_to:
+                message_data['reply_to'] = {
+                    'id': message.reply_to.id,
+                    'body': message.reply_to.body,
+                    'sender_username': message.reply_to.sender.username
+                }
+            
+            async_to_sync(channel_layer.group_send)(
+                f'chat_{conversation.id}',
+                {
+                    'type': 'chat_message',
+                    'message': message_data
                 }
             )
             
@@ -459,6 +503,14 @@ def service_worker(request):
         return response
     except FileNotFoundError:
         return HttpResponse('Service worker not found', status=404)
+
+
+def desktopLanding(request):
+    """
+    Landing page for desktop users promoting the mobile app.
+    This page is shown to non-mobile users before they can access the main app.
+    """
+    return render(request, 'base/desktop-landing.html')
 
 
 #print(check_user_status(1))

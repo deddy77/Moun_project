@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moun - Mobile App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #718096;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .mobile-icon {
+            width: 200px;
+            height: auto;
+            margin: 30px auto;
+            display: block;
+        }
+        
+        .features {
+            text-align: left;
+            margin: 40px 0;
+            padding: 30px;
+            background: #f7fafc;
+            border-radius: 15px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #4a5568;
+        }
+        
+        .feature:last-child {
+            margin-bottom: 0;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .instructions {
+            background: #edf2f7;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        .instructions h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .step {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: left;
+            color: #4a5568;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #718096;
+            padding: 20px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            color: #a0aec0;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .subtitle {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">M</div>
+        
+        <h1>📱 Mobile Only Experience</h1>
+        
+        <p class="subtitle">
+            Moun is designed exclusively for mobile devices to provide you with the best on-the-go experience.
+        </p>
+        
+        <svg class="mobile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" fill="#667eea" opacity="0.2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18" stroke="#667eea"></line>
+        </svg>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Real-time messaging and notifications</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Offline support and data sync</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Native app-like experience</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Install directly to your home screen</span>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>🚀 How to Access Moun</h3>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <span>Open this website on your mobile device (phone or tablet)</span>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <span>You'll be prompted to install the app to your home screen</span>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <span>Enjoy the full mobile experience!</span>
+            </div>
+            
+            <div class="qr-placeholder">
+                Scan this QR code with your mobile device
+                <br><br>
+                (QR code can be generated here)
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Need help? Contact support</p>
+            <p style="margin-top: 10px;">© 2026 Moun. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

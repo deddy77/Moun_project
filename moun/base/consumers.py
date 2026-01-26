@@ -66,3 +66,61 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             conversation__participants=self.user,
             is_read=False
         ).exclude(sender=self.user).count()
+
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope["user"]
+        self.conversation_id = self.scope['url_route']['kwargs']['conversation_id']
+        self.room_group_name = f'chat_{self.conversation_id}'
+        
+        logger.info(f"[ChatWebSocket] Connection attempt - User: {self.user}, Conversation: {self.conversation_id}")
+        
+        if self.user.is_authenticated:
+            # Check if user is participant
+            is_participant = await self.check_participant()
+            if is_participant:
+                # Join conversation group
+                await self.channel_layer.group_add(
+                    self.room_group_name,
+                    self.channel_name
+                )
+                
+                await self.accept()
+                logger.info(f"[ChatWebSocket] ✅ Connected - User: {self.user.username}, Room: {self.room_group_name}")
+            else:
+                logger.warning(f"[ChatWebSocket] ❌ Rejected - User not participant")
+                await self.close()
+        else:
+            logger.warning(f"[ChatWebSocket] ❌ Rejected - User not authenticated")
+            await self.close()
+
+    async def disconnect(self, close_code):
+        logger.info(f"[ChatWebSocket] Disconnected - User: {self.user}, Code: {close_code}")
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+
+    # Receive message from WebSocket
+    async def receive(self, text_data):
+        pass
+
+    # Handler for chat_message event from group
+    async def chat_message(self, event):
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'new_message',
+            'message': event['message']
+        }))
+        logger.info(f"[ChatWebSocket] Sent message to {self.user.username}")
+
+    @database_sync_to_async
+    def check_participant(self):
+        from base.models import Conversation
+        try:
+            conversation = Conversation.objects.get(id=self.conversation_id)
+            return self.user in conversation.participants.all()
+        except Conversation.DoesNotExist:
+            return False

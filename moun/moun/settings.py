@@ -33,8 +33,17 @@ ALLOWED_HOSTS = [
 
 # CSRF Settings for HTTPS/ngrok
 CSRF_TRUSTED_ORIGINS = [
-    'https://especially-super-kid.ngrok-free.app'
+    'https://especially-super-kid.ngrok-free.app',
+    'http://especially-super-kid.ngrok-free.app',  # Add HTTP variant
 ]
+
+# Additional CSRF settings for ngrok
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False
+CSRF_USE_SESSIONS = False
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_DOMAIN = None  # Allow all domains in ALLOWED_HOSTS
 
 # WebSocket/Channels settings for ngrok
 # Allow WebSocket connections from ngrok
@@ -87,7 +96,8 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 
-    'base.middleware.ActiveUserMiddleware',  # <-- Add this line
+    'base.middleware.ActiveUserMiddleware',  # <-- Update user activity
+    'base.middleware.MobileOnlyMiddleware',  # <-- Redirect desktop users to landing page
 ]
 
 ROOT_URLCONF = 'moun.urls'

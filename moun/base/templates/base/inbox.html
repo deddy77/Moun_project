@@ -13,34 +13,40 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--color-main-light);
     }
 
     .inbox-header h1 {
-        font-size: 2rem;
-        color: #1f2937;
+        font-size: 2.4rem;
+        color: var(--color-dark);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
 
     .conversations-list {
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         overflow: hidden;
     }
 
     .conversation-item {
         display: flex;
         align-items: center;
-        padding: 1.25rem;
+        padding: 1.5rem 1.25rem;
         border-bottom: 1px solid #f3f4f6;
         text-decoration: none;
         color: inherit;
-        transition: background 0.2s;
+        transition: all 0.2s ease;
+        position: relative;
     }
 
     .conversation-item:hover {
-        background: #f9fafb;
+        background: var(--color-main-light);
+        transform: translateX(4px);
     }
 
     .conversation-item:last-child {
@@ -48,72 +54,155 @@
     }
 
     .user-avatar {
-        width: 50px;
-        height: 50px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
-        margin-right: 1rem;
+        margin-right: 1.25rem;
         object-fit: cover;
-        background: #e5e7eb;
+        background: linear-gradient(135deg, var(--color-main-light), var(--color-main));
+        border: 3px solid var(--color-main-light);
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .online-status {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .online-status.online {
+        background: #10b981;
+        animation: pulse-online 2s infinite;
+    }
+
+    .online-status.offline {
+        background: #9ca3af;
+    }
+
+    @keyframes pulse-online {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+        50% {
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        }
     }
 
     .conversation-info {
         flex: 1;
+        min-width: 0;
     }
 
     .conversation-user {
         font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
+        color: var(--color-dark);
+        margin-bottom: 0.4rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
     .conversation-preview {
-        color: #6b7280;
-        font-size: 0.9rem;
+        color: var(--color-dark-light);
+        font-size: 0.95rem;
+        line-height: 1.5;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: 100%;
+    }
+
+    .conversation-preview strong {
+        font-weight: 600;
+        color: var(--color-dark-medium);
     }
 
     .unread-badge {
-        background: #3B82F6;
+        background: linear-gradient(135deg, var(--color-main), #5dd693);
         color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 12px;
+        padding: 0.3rem 0.7rem;
+        border-radius: 16px;
         font-size: 0.75rem;
-        font-weight: 600;
-        min-width: 20px;
+        font-weight: 700;
+        min-width: 22px;
         text-align: center;
+        box-shadow: 0 2px 6px rgba(113, 198, 221, 0.4);
     }
 
     .empty-inbox {
         text-align: center;
-        padding: 4rem 2rem;
-        color: #6b7280;
+        padding: 5rem 2rem;
+        color: var(--color-dark-light);
     }
 
     .empty-inbox-icon {
-        font-size: 4rem;
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.7;
+    }
+
+    .empty-inbox h2 {
+        color: var(--color-dark);
+        font-size: 1.8rem;
         margin-bottom: 1rem;
+    }
+
+    .empty-inbox p {
+        color: var(--color-dark-light);
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .inbox-container {
+            margin: 1rem auto;
+            padding: 0 0.75rem;
+        }
+
+        .inbox-header h1 {
+            font-size: 2rem;
+        }
+
+        .conversation-item {
+            padding: 1.25rem 1rem;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+        }
     }
 </style>
 
 <div class="inbox-container">
     <div class="inbox-header">
-        <h1>📬 Messages</h1>
+        <h1>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+                <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM8 8h16c0.286 0 0.563 0.061 0.817 0.177l-8.817 8.817-8.817-8.817c0.254-0.116 0.531-0.177 0.817-0.177zM6 22v-12c0-0.042 0.002-0.084 0.004-0.125l5.864 5.864-5.815 5.815c-0.034-0.179-0.054-0.362-0.054-0.554zM24 24h-16c-0.192 0-0.375-0.019-0.554-0.054l5.815-5.815 2.739 2.739 2.739-2.739 5.815 5.815c-0.179 0.034-0.362 0.054-0.554 0.054zM26 22c0 0.192-0.019 0.375-0.054 0.554l-5.815-5.815 5.865-5.865c0.003 0.042 0.004 0.084 0.004 0.125v12z"></path>
+            </svg>
+            Messages
+        </h1>
     </div>
 
     {% if conversations_data %}
         <div class="conversations-list">
             {% for item in conversations_data %}
                 <a href="{% url 'conversation' item.conversation.id %}" class="conversation-item">
-                    {% if item.other_user.avatar %}
-                        <img src="{{ item.other_user.avatar.url }}" alt="{{ item.other_user.username }}" class="user-avatar">
-                    {% else %}
-                        <div class="user-avatar"></div>
-                    {% endif %}
+                    <div style="position: relative;">
+                        {% if item.other_user.avatar %}
+                            <img src="{{ item.other_user.avatar.url }}" alt="{{ item.other_user.username }}" class="user-avatar">
+                        {% else %}
+                            <div class="user-avatar"></div>
+                        {% endif %}
+                        <span class="online-status {% if item.is_online %}online{% else %}offline{% endif %}"></span>
+                    </div>
                     
                     <div class="conversation-info">
                         <div class="conversation-user">
@@ -124,11 +213,11 @@
                         </div>
                         {% if item.last_message %}
                             <div class="conversation-preview">
-                                {% if item.last_message.sender == request.user %}You: {% endif %}
-                                {{ item.last_message.body|truncatewords:10 }}
+                                {% if item.last_message.sender == request.user %}<strong>You:</strong> {% endif %}
+                                {{ item.last_message.body|truncatewords:12 }}
                             </div>
                         {% else %}
-                            <div class="conversation-preview">No messages yet</div>
+                            <div class="conversation-preview" style="font-style: italic; opacity: 0.7;">No messages yet</div>
                         {% endif %}
                     </div>
                 </a>

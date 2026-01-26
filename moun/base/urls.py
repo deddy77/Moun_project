@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
 
+    # Desktop landing page for non-mobile users
+    path('desktop-landing/', views.desktopLanding, name='desktop-landing'),
 
     path('login/', views.loginPage, name="login"),
     path('logout/', views.lougoutUser, name="logout"),

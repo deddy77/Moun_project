@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <!-- PWA Meta Tags -->
     <meta name="description" content="Stay connected with people that matter" />
@@ -29,13 +29,6 @@
   <body>
     
     {% include 'navbar.html' %}
-    {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
     
     {% block content %}
     {% endblock %}
@@ -55,7 +48,86 @@
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
+        // Listen for service worker messages
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'SW_UPDATED') {
+            console.log('[PWA] 🔄 Service Worker updated:', event.data.version);
+            console.log('[PWA] 📝', event.data.message);
+            
+            // For old sessions (v6 or older), force complete cleanup and reload
+            const lastVersion = localStorage.getItem('sw_version');
+            if (!lastVersion || lastVersion !== event.data.version) {
+              console.log('[PWA] 🔄 Updating from', lastVersion || 'unknown', 'to', event.data.version);
+              
+              // Show notification
+              const notification = document.createElement('div');
+              notification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4CAF50;color:white;padding:15px 25px;border-radius:8px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-size:14px;';
+              notification.textContent = '✅ App updated! Reloading...';
+              document.body.appendChild(notification);
+              
+              // Aggressive cleanup for old sessions
+              async function forceCleanupAndReload() {
+                try {
+                  // 1. Unregister ALL service workers
+                  const registrations = await navigator.serviceWorker.getRegistrations();
+                  console.log('[PWA] Unregistering', registrations.length, 'service workers...');
+                  for (const registration of registrations) {
+                    await registration.unregister();
+                  }
+                  
+                  // 2. Delete ALL caches
+                  const cacheNames = await caches.keys();
+                  console.log('[PWA] Deleting', cacheNames.length, 'caches...');
+                  for (const cacheName of cacheNames) {
+                    await caches.delete(cacheName);
+                  }
+                  
+                  // 3. Update version marker
+                  localStorage.setItem('sw_version', event.data.version);
+                  
+                  // 4. Force reload (will register fresh service worker)
+                  console.log('[PWA] ✅ Cleanup complete, reloading...');
+                  window.location.reload(true); // Hard reload
+                } catch (error) {
+                  console.error('[PWA] Cleanup error:', error);
+                  // Reload anyway
+                  localStorage.setItem('sw_version', event.data.version);
+                  window.location.reload(true);
+                }
+              }
+              
+              // Execute cleanup after showing notification
+              setTimeout(forceCleanupAndReload, 1000);
+            }
+          }
+        });
+        
         window.addEventListener('load', () => {
+          // CRITICAL: Check if we're still on old version on page load
+          const currentVersion = localStorage.getItem('sw_version');
+          const targetVersion = 'v7';
+          
+          if (!currentVersion || currentVersion !== targetVersion) {
+            console.warn('[PWA] ⚠️ Old version detected:', currentVersion, '- Need:', targetVersion);
+            
+            // If still on old version after page load, force cleanup immediately
+            if (currentVersion && currentVersion !== targetVersion) {
+              console.log('[PWA] 🔧 Force cleanup on old session...');
+              
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                console.log('[PWA] Found', registrations.length, 'old service workers');
+                Promise.all(registrations.map(r => r.unregister()))
+                  .then(() => caches.keys())
+                  .then(keys => Promise.all(keys.map(k => caches.delete(k))))
+                  .then(() => {
+                    console.log('[PWA] ✅ Old session cleaned, updating version marker');
+                    localStorage.setItem('sw_version', targetVersion);
+                    // Don't reload here, let new SW register below
+                  });
+              });
+            }
+          }
+          
           // Register at root path (served by Django view)
           navigator.serviceWorker.register('/service-worker.js')
             .then((registration) => {

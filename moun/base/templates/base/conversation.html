@@ -9,53 +9,67 @@
         display: flex;
         flex-direction: column;
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         overflow: hidden;
     }
 
     .chat-header {
-        padding: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
+        padding: 1.5rem 1.25rem;
+        border-bottom: 2px solid var(--color-main-light);
         display: flex;
         align-items: center;
         gap: 1rem;
-        background: #f9fafb;
+        background: linear-gradient(135deg, #ffffff, var(--color-main-light));
     }
 
     .chat-header img {
-        width: 45px;
-        height: 45px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         object-fit: cover;
+        border: 3px solid var(--color-main);
     }
 
     .chat-header-info h2 {
         margin: 0;
-        font-size: 1.25rem;
-        color: #1f2937;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--color-dark);
     }
 
     .back-link {
-        color: #3B82F6;
+        color: var(--color-main);
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 0.25rem;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--color-dark-medium);
     }
 
     .messages-container {
         flex: 1;
         overflow-y: auto;
-        padding: 1.5rem;
-        background: #f9fafb;
+        padding: 2rem 1.5rem;
+        background: linear-gradient(180deg, #f9fafb, #ffffff);
     }
 
     .message {
         display: flex;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         gap: 0.75rem;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .message.sent {
@@ -68,34 +82,49 @@
         border-radius: 50%;
         object-fit: cover;
         flex-shrink: 0;
+        border: 2px solid var(--color-light);
     }
 
     .message-content {
-        max-width: 60%;
+        max-width: 70%;
+        display: inline-flex;
+        flex-direction: column;
+    }
+
+    .message.sent .message-content {
+        align-items: flex-end;
     }
 
     .message-bubble {
-        padding: 0.75rem 1rem;
+        padding: 0.65rem 1rem;
         border-radius: 18px;
         word-wrap: break-word;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        display: inline-block;
+        width: fit-content;
     }
 
     .message.received .message-bubble {
         background: white;
-        border: 1px solid #e5e7eb;
-        color: #1f2937;
+        border: 2px solid var(--color-light);
+        color: var(--color-dark);
     }
 
     .message.sent .message-bubble {
-        background: #3B82F6;
+        background: linear-gradient(135deg, var(--color-main), #4db8e8);
         color: white;
+        border: none;
     }
 
     .message-time {
         font-size: 0.75rem;
-        color: #9ca3af;
-        margin-top: 0.25rem;
+        color: var(--color-gray);
+        margin-top: 0.4rem;
         padding: 0 0.5rem;
+        font-weight: 500;
     }
 
     .message.sent .message-time {
@@ -103,50 +132,205 @@
     }
 
     .message-form {
-        padding: 1rem;
-        border-top: 1px solid #e5e7eb;
+        padding: 1.25rem;
+        border-top: 2px solid var(--color-main-light);
         background: white;
     }
 
     .message-input-wrapper {
         display: flex;
         gap: 0.75rem;
+        align-items: flex-end;
     }
 
     .message-input {
         flex: 1;
-        padding: 0.75rem 1rem;
-        border: 1px solid #d1d5db;
+        padding: 0.9rem 1.25rem;
+        border: 2px solid var(--color-light);
         border-radius: 24px;
-        font-size: 1rem;
+        font-size: 16px;
         resize: none;
         max-height: 120px;
         font-family: inherit;
+        line-height: 1.5;
+        transition: all 0.2s ease;
+        background: #f9fafb;
     }
 
     .message-input:focus {
         outline: none;
-        border-color: #3B82F6;
+        border-color: var(--color-main);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(113, 198, 221, 0.1);
     }
 
     .send-button {
-        background: #3B82F6;
+        background: linear-gradient(135deg, var(--color-main), #5dd693);
         color: white;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.9rem 1.75rem;
         border-radius: 24px;
         cursor: pointer;
-        font-weight: 600;
-        transition: background 0.2s;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(113, 198, 221, 0.3);
     }
 
     .send-button:hover {
-        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(113, 198, 221, 0.4);
+    }
+
+    .send-button:active {
+        transform: translateY(0);
     }
 
     .send-button:disabled {
-        background: #9ca3af;
+        background: var(--color-light-gray);
         cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .empty-messages {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--color-dark-light);
+    }
+
+    .empty-messages p {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Reply feature styles */
+    .reply-preview {
+        display: none;
+        background: linear-gradient(135deg, rgba(113, 198, 221, 0.08), rgba(93, 214, 147, 0.08));
+        padding: 0.6rem 0.9rem;
+        border-left: 3px solid var(--color-main);
+        margin-bottom: 0.5rem;
+        border-radius: 12px;
+        position: relative;
+        backdrop-filter: blur(10px);
+    }
+
+    .reply-preview.active {
+        display: block;
+        animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .reply-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.3rem;
+    }
+
+    .reply-preview-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-main);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .reply-preview-close {
+        background: rgba(113, 198, 221, 0.15);
+        border: none;
+        font-size: 1rem;
+        color: var(--color-main);
+        cursor: pointer;
+        padding: 0;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+    .reply-preview-close:hover {
+        background: rgba(113, 198, 221, 0.25);
+        transform: rotate(90deg);
+    }
+
+    .reply-preview-body {
+        font-size: 0.85rem;
+        color: var(--color-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 0.85;
+    }
+
+    .message-with-reply .replied-message {
+        background: rgba(113, 198, 221, 0.1);
+        padding: 0.5rem 0.7rem;
+        border-left: 2px solid rgba(113, 198, 221, 0.5);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--color-dark-light);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .replied-message strong {
+        color: var(--color-main);
+        font-size: 0.75rem;
+        display: block;
+        margin-bottom: 0.15rem;
+    }
+
+    .message-bubble-wrapper {
+        position: relative;
+        transition: transform 0.2s ease;
+    }
+
+    .reply-indicator {
+        position: absolute;
+        right: -50px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .chat-container {
+            margin: 1rem;
+            height: calc(100vh - 150px);
+            border-radius: 12px;
+        }
+
+        .messages-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .message-content {
+            max-width: 80%;
+        }
+
+        .message-bubble {
+            padding: 0.85rem 1rem;
+            font-size: 0.95rem;
+        }
     }
 </style>
 
@@ -156,7 +340,7 @@
         {% if other_user.avatar %}
             <img src="{{ other_user.avatar.url }}" alt="{{ other_user.username }}">
         {% else %}
-            <div style="width: 45px; height: 45px; background: #e5e7eb; border-radius: 50%;"></div>
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--color-main-light), var(--color-main)); border-radius: 50%; border: 3px solid var(--color-main);"></div>
         {% endif %}
         <div class="chat-header-info">
             <h2>{{ other_user.username }}</h2>
@@ -165,38 +349,60 @@
 
     <div class="messages-container" id="messages">
         {% for message in messages %}
-            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}" 
+                 data-message-id="{{ message.id }}"
+                 data-message-body="{{ message.body }}"
+                 data-sender="{{ message.sender.username }}">
                 {% if message.sender != request.user %}
                     {% if message.sender.avatar %}
                         <img src="{{ message.sender.avatar.url }}" alt="{{ message.sender.username }}" class="message-avatar">
                     {% else %}
-                        <div class="message-avatar" style="background: #e5e7eb;"></div>
+                        <div class="message-avatar" style="background: linear-gradient(135deg, var(--color-main-light), var(--color-main));"></div>
                     {% endif %}
                 {% endif %}
                 
                 <div class="message-content">
-                    <div class="message-bubble">
-                        {{ message.body }}
+                    <div class="message-bubble-wrapper">
+                        <div class="message-bubble {% if message.reply_to %}message-with-reply{% endif %}">
+                            {% if message.reply_to %}
+                                <div class="replied-message">
+                                    <strong>{{ message.reply_to.sender.username }}:</strong> {{ message.reply_to.body|truncatewords:10 }}
+                                </div>
+                            {% endif %}
+                            {{ message.body }}
+                        </div>
+                        <span class="reply-indicator">↩️</span>
                     </div>
                     <div class="message-time">
-                        {{ message.created|date:"M d, Y g:i A" }}
+                        {{ message.created|date:"M d, g:i A" }}
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div style="text-align: center; color: #9ca3af; padding: 2rem;">
-                <p>No messages yet. Start the conversation!</p>
+            <div class="empty-messages">
+                <p>💬 No messages yet. Start the conversation!</p>
             </div>
         {% endfor %}
     </div>
 
     <form method="POST" class="message-form" id="messageForm">
         {% csrf_token %}
+        <input type="hidden" name="reply_to_id" id="replyToId" value="">
+        
+        <!-- Reply Preview -->
+        <div class="reply-preview" id="replyPreview">
+            <div class="reply-preview-header">
+                <span class="reply-preview-title">Replying to <span id="replyToUser"></span></span>
+                <button type="button" class="reply-preview-close" onclick="cancelReply()">×</button>
+            </div>
+            <div class="reply-preview-body" id="replyPreviewBody"></div>
+        </div>
+        
         <div class="message-input-wrapper">
             <textarea 
                 name="body" 
                 class="message-input" 
-                placeholder="Type a message..." 
+                placeholder="Type your message..." 
                 rows="1"
                 required
                 id="messageInput"
@@ -225,6 +431,301 @@
             document.getElementById('messageForm').submit();
         }
     });
+
+    // Smooth scroll animation
+    messagesContainer.scrollTo({
+        top: messagesContainer.scrollHeight,
+        behavior: 'smooth'
+    });
+
+    // Dismiss keyboard when clicking outside the input
+    document.addEventListener('click', function(e) {
+        const inputWrapper = document.querySelector('.message-input-wrapper');
+        const input = document.getElementById('messageInput');
+        
+        // If click is outside the input wrapper and input is focused
+        if (!inputWrapper.contains(e.target) && document.activeElement === input) {
+            input.blur();
+        }
+    });
+
+    // Reply feature - Swipe to reply
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let currentSwipeElement = null;
+
+    function setReply(messageId, messageBody, senderUsername) {
+        document.getElementById('replyToId').value = messageId;
+        document.getElementById('replyToUser').textContent = senderUsername;
+        document.getElementById('replyPreviewBody').textContent = messageBody;
+        document.getElementById('replyPreview').classList.add('active');
+        document.getElementById('messageInput').focus();
+    }
+
+    function cancelReply() {
+        document.getElementById('replyToId').value = '';
+        document.getElementById('replyPreview').classList.remove('active');
+    }
+
+    // Add swipe gesture to all messages
+    document.querySelectorAll('.message').forEach(message => {
+        const wrapper = message.querySelector('.message-bubble-wrapper');
+        const indicator = message.querySelector('.reply-indicator');
+        
+        message.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            currentSwipeElement = wrapper;
+        }, { passive: true });
+
+        message.addEventListener('touchmove', function(e) {
+            if (!currentSwipeElement) return;
+            
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const diffX = touchX - touchStartX;
+            const diffY = touchY - touchStartY;
+            
+            // Only respond to horizontal swipes (not vertical scrolls)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 20) {
+                e.preventDefault();
+                
+                // Limit swipe distance
+                const maxSwipe = 80;
+                const swipeDistance = Math.min(Math.abs(diffX), maxSwipe);
+                const direction = message.classList.contains('sent') ? -1 : 1;
+                
+                wrapper.style.transform = `translateX(${direction * swipeDistance}px)`;
+                indicator.style.opacity = swipeDistance / maxSwipe;
+            }
+        }, { passive: false });
+
+        message.addEventListener('touchend', function(e) {
+            if (!currentSwipeElement) return;
+            
+            const touchX = e.changedTouches[0].clientX;
+            const diffX = Math.abs(touchX - touchStartX);
+            
+            // If swiped more than 50px, trigger reply
+            if (diffX > 50) {
+                const messageId = message.dataset.messageId;
+                const messageBody = message.dataset.messageBody;
+                const sender = message.dataset.sender;
+                setReply(messageId, messageBody, sender);
+            }
+            
+            // Reset position
+            wrapper.style.transform = '';
+            indicator.style.opacity = '0';
+            currentSwipeElement = null;
+        });
+
+        // Also add click on reply indicator for desktop
+        indicator.addEventListener('click', function() {
+            const messageId = message.dataset.messageId;
+            const messageBody = message.dataset.messageBody;
+            const sender = message.dataset.sender;
+            setReply(messageId, messageBody, sender);
+        });
+
+        // Long press for desktop/tablet
+        let longPressTimer;
+        message.addEventListener('mousedown', function() {
+            longPressTimer = setTimeout(() => {
+                const messageId = message.dataset.messageId;
+                const messageBody = message.dataset.messageBody;
+                const sender = message.dataset.sender;
+                setReply(messageId, messageBody, sender);
+            }, 500);
+        });
+
+        message.addEventListener('mouseup', function() {
+            clearTimeout(longPressTimer);
+        });
+
+        message.addEventListener('mouseleave', function() {
+            clearTimeout(longPressTimer);
+        });
+    });
+
+    // WebSocket for real-time messages
+    const conversationId = {{ conversation.id }};
+    const currentUserId = {{ request.user.id }};
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/chat/${conversationId}/`;
+    
+    let chatSocket = null;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
+
+    function connectChatWebSocket() {
+        console.log('[Chat] Connecting to:', wsUrl);
+        chatSocket = new WebSocket(wsUrl);
+
+        chatSocket.onopen = function(e) {
+            console.log('[Chat] ✅ Connected to conversation');
+            reconnectAttempts = 0;
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log('[Chat] 📨 Received:', data);
+            
+            if (data.type === 'new_message') {
+                // Don't add message from current user (already added on page reload)
+                if (data.message.sender_id !== currentUserId) {
+                    addMessageToChat(data.message);
+                }
+            }
+        };
+
+        chatSocket.onerror = function(e) {
+            console.error('[Chat] ❌ WebSocket error:', e);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.log('[Chat] 🔌 Disconnected. Code:', e.code);
+            
+            // Try to reconnect
+            if (reconnectAttempts < maxReconnectAttempts) {
+                reconnectAttempts++;
+                const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
+                console.log(`[Chat] 🔄 Reconnecting in ${delay}ms... (Attempt ${reconnectAttempts}/${maxReconnectAttempts})`);
+                setTimeout(connectChatWebSocket, delay);
+            } else {
+                console.log('[Chat] ⚠️ Max reconnection attempts reached');
+            }
+        };
+    }
+
+    function addMessageToChat(message) {
+        const messagesContainer = document.getElementById('messages');
+        const isReceived = message.sender_id !== currentUserId;
+        
+        // Create message element
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isReceived ? 'received' : 'sent'}`;
+        messageDiv.dataset.messageId = message.id;
+        messageDiv.dataset.messageBody = message.body;
+        messageDiv.dataset.sender = message.sender_username;
+        
+        let avatarHtml = '';
+        if (isReceived) {
+            if (message.sender_avatar) {
+                avatarHtml = `<img src="${message.sender_avatar}" alt="${message.sender_username}" class="message-avatar">`;
+            } else {
+                avatarHtml = '<div class="message-avatar" style="background: linear-gradient(135deg, var(--color-main-light), var(--color-main));"></div>';
+            }
+        }
+        
+        let replyHtml = '';
+        if (message.reply_to) {
+            replyHtml = `
+                <div class="replied-message">
+                    <strong>${message.reply_to.sender_username}:</strong> ${truncateText(message.reply_to.body, 10)}
+                </div>
+            `;
+        }
+        
+        messageDiv.innerHTML = `
+            ${avatarHtml}
+            <div class="message-content">
+                <div class="message-bubble-wrapper">
+                    <div class="message-bubble ${message.reply_to ? 'message-with-reply' : ''}">
+                        ${replyHtml}
+                        ${message.body}
+                    </div>
+                    <span class="reply-indicator">↩️</span>
+                </div>
+                <div class="message-time">${message.created}</div>
+            </div>
+        `;
+        
+        // Add fade-in animation
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transform = 'translateY(20px)';
+        
+        messagesContainer.appendChild(messageDiv);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            messageDiv.style.transition = 'all 0.3s ease';
+            messageDiv.style.opacity = '1';
+            messageDiv.style.transform = 'translateY(0)';
+        });
+        
+        // Scroll to bottom
+        messagesContainer.scrollTo({
+            top: messagesContainer.scrollHeight,
+            behavior: 'smooth'
+        });
+        
+        // Setup swipe gesture for new message
+        setupSwipeGesture(messageDiv);
+    }
+
+    function truncateText(text, words) {
+        const wordArray = text.split(' ');
+        if (wordArray.length > words) {
+            return wordArray.slice(0, words).join(' ') + '...';
+        }
+        return text;
+    }
+
+    function setupSwipeGesture(message) {
+        const wrapper = message.querySelector('.message-bubble-wrapper');
+        const indicator = message.querySelector('.reply-indicator');
+        let localTouchStartX = 0;
+        let localTouchStartY = 0;
+        let localCurrentSwipeElement = null;
+        
+        message.addEventListener('touchstart', function(e) {
+            localTouchStartX = e.touches[0].clientX;
+            localTouchStartY = e.touches[0].clientY;
+            localCurrentSwipeElement = wrapper;
+        }, { passive: true });
+
+        message.addEventListener('touchmove', function(e) {
+            if (!localCurrentSwipeElement) return;
+            
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const diffX = touchX - localTouchStartX;
+            const diffY = touchY - localTouchStartY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 20) {
+                e.preventDefault();
+                const maxSwipe = 80;
+                const swipeDistance = Math.min(Math.abs(diffX), maxSwipe);
+                const direction = message.classList.contains('sent') ? -1 : 1;
+                
+                wrapper.style.transform = `translateX(${direction * swipeDistance}px)`;
+                indicator.style.opacity = swipeDistance / maxSwipe;
+            }
+        }, { passive: false });
+
+        message.addEventListener('touchend', function(e) {
+            if (!localCurrentSwipeElement) return;
+            
+            const touchX = e.changedTouches[0].clientX;
+            const diffX = Math.abs(touchX - localTouchStartX);
+            
+            if (diffX > 50) {
+                const messageId = message.dataset.messageId;
+                const messageBody = message.dataset.messageBody;
+                const sender = message.dataset.sender;
+                setReply(messageId, messageBody, sender);
+            }
+            
+            wrapper.style.transform = '';
+            indicator.style.opacity = '0';
+            localCurrentSwipeElement = null;
+        });
+    }
+
+    // Connect to WebSocket
+    connectChatWebSocket();
+
 </script>
 
 {% endblock %}

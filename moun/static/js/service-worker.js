@@ -1,7 +1,15 @@
-const CACHE_NAME = 'together-pwa-v6';
-const STATIC_CACHE = 'together-static-v6';
-const DYNAMIC_CACHE = 'together-dynamic-v6';
-const API_CACHE = 'together-api-v6';
+const CACHE_NAME = 'together-pwa-v7';
+const STATIC_CACHE = 'together-static-v7';
+const DYNAMIC_CACHE = 'together-dynamic-v7';
+const API_CACHE = 'together-api-v7';
+
+// Track server state to prevent offline/online loops
+let serverState = {
+  isOnline: true,
+  lastCheck: Date.now(),
+  consecutiveErrors: 0,
+  checkInterval: 5000  // 5 seconds between checks
+};
 
 // Core assets needed for offline functionality
 const CRITICAL_ASSETS = [
@@ -36,7 +44,7 @@ const CACHE_LIMITS = {
 
 // Install event - cache resources aggressively
 self.addEventListener('install', (event) => {
-  console.log('[ServiceWorker] Installing v4 - Aggressive Caching...');
+  console.log('[ServiceWorker] Installing v7 - Fixed offline loop...');
   event.waitUntil(
     Promise.all([
       // Cache critical assets first
@@ -68,11 +76,22 @@ self.addEventListener('install', (event) => {
     ])
   );
   self.skipWaiting();
+  
+  // Notify clients about update
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'SW_UPDATED',
+        version: 'v7',
+        message: 'Service Worker updated to v7 - Fixed offline loop'
+      });
+    });
+  });
 });
 
 // Activate event - clean up old caches and take control immediately
 self.addEventListener('activate', (event) => {
-  console.log('[ServiceWorker] Activating v4...');
+  console.log('[ServiceWorker] Activating v7...');
   event.waitUntil(
     Promise.all([
       // Delete old caches
@@ -207,15 +226,33 @@ async function cacheFirstStrategy(request, cacheName) {
 
 // Helper: Check if response indicates server is down
 async function isServerError(response) {
+  const now = Date.now();
+  
+  // Prevent rapid consecutive checks - debounce
+  if (now - serverState.lastCheck < 1000) {
+    // Less than 1 second since last check - return cached state
+    return !serverState.isOnline;
+  }
+  
+  serverState.lastCheck = now;
+  
   // Server error status codes (5xx)
   if (response.status >= 500) {
     console.log('[ServiceWorker] ⚠️ Server error:', response.status);
+    serverState.consecutiveErrors++;
+    if (serverState.consecutiveErrors >= 2) {
+      serverState.isOnline = false;
+    }
     return true;
   }
   
   // Gateway errors (502, 503, 504)
   if (response.status === 502 || response.status === 503 || response.status === 504) {
     console.log('[ServiceWorker] ⚠️ Gateway error:', response.status);
+    serverState.consecutiveErrors++;
+    if (serverState.consecutiveErrors >= 2) {
+      serverState.isOnline = false;
+    }
     return true;
   }
   
@@ -246,8 +283,16 @@ async function isServerError(response) {
       
       if (isNgrokError) {
         console.log('[ServiceWorker] ⚠️ NGROK ERROR DETECTED - Falling back to cache');
+        serverState.consecutiveErrors++;
+        if (serverState.consecutiveErrors >= 2) {
+          serverState.isOnline = false;
+        }
         return true;
       }
+      
+      // Success - reset error counter
+      serverState.consecutiveErrors = 0;
+      serverState.isOnline = true;
       
       // Check if response is too short to be real HTML (ngrok errors are small)
       if (text.length < 1000 && lowerText.includes('ngrok')) {
