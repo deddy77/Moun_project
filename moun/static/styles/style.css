@@ -395,6 +395,22 @@ a {
   fill: #ff6666;
 }
 
+/* Flash animation when icon updates */
+@keyframes icon-flash {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+.message-icon-flash {
+  animation: icon-flash 0.4s ease-out;
+}
+
 @keyframes message-pulse {
   0%, 100% {
     opacity: 1;

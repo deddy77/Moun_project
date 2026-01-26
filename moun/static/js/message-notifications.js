@@ -124,20 +124,54 @@ class MessageNotifications {
 
     updateMessageIcon(count) {
         const messageLink = document.querySelector('a[href*="inbox"]');
-        if (!messageLink) return;
-
-        const hasUnread = count > 0;
-        
-        // Create new SVG based on count
-        const newSvg = hasUnread ? this.getFilledSvg(count) : this.getOutlineSvg();
-        
-        // Replace the SVG
-        const oldSvg = messageLink.querySelector('svg');
-        if (oldSvg) {
-            oldSvg.outerHTML = newSvg;
+        if (!messageLink) {
+            console.warn('[MessageNotifications] Message link not found!');
+            return;
         }
 
-        console.log(`[MessageNotifications] Updated icon - ${count} unread messages`);
+        const hasUnread = count > 0;
+        const currentSvg = messageLink.querySelector('svg');
+        
+        if (!currentSvg) {
+            console.warn('[MessageNotifications] SVG icon not found!');
+            return;
+        }
+
+        // Check if icon needs to be changed
+        const currentlyHasUnread = currentSvg.classList.contains('has-unread');
+        
+        if (hasUnread && !currentlyHasUnread) {
+            // Switch to filled icon
+            console.log(`[MessageNotifications] 🔴 Switching to filled icon - ${count} unread`);
+            const newSvg = this.getFilledSvg(count);
+            currentSvg.outerHTML = newSvg;
+            
+            // Add flash animation
+            const updatedSvg = messageLink.querySelector('svg');
+            if (updatedSvg) {
+                updatedSvg.classList.add('message-icon-flash');
+                setTimeout(() => updatedSvg.classList.remove('message-icon-flash'), 400);
+            }
+            
+            // Force browser reflow to trigger animation
+            messageLink.offsetHeight;
+        } else if (!hasUnread && currentlyHasUnread) {
+            // Switch to outline icon
+            console.log('[MessageNotifications] ⚪ Switching to outline icon - no unread');
+            const newSvg = this.getOutlineSvg();
+            currentSvg.outerHTML = newSvg;
+            
+            // Force browser reflow
+            messageLink.offsetHeight;
+        } else if (hasUnread && currentlyHasUnread) {
+            // Update tooltip count only
+            const title = messageLink.querySelector('svg title');
+            if (title) {
+                title.textContent = `Messages (${count} unread)`;
+            }
+        }
+
+        console.log(`[MessageNotifications] Icon state: ${hasUnread ? 'FILLED ✓' : 'OUTLINE'} (${count} unread)`);
     }
 
     getFilledSvg(count) {
