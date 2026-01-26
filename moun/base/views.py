@@ -362,9 +362,24 @@ def conversation_detail(request, pk):
     
     # Handle message sending
     if request.method == 'POST':
-        body = request.POST.get('body')
+        body = request.POST.get('body', '')
         reply_to_id = request.POST.get('reply_to_id')
-        if body:
+        file = request.FILES.get('file')
+        file_type = 'text'
+        voice_duration = request.POST.get('voice_duration')
+        
+        # Determine file type
+        if file:
+            file_name = file.name.lower()
+            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+                file_type = 'image'
+            elif file_name.endswith(('.mp4', '.webm', '.mov', '.avi')):
+                file_type = 'video'
+            elif file_name.endswith(('.mp3', '.wav', '.ogg', '.m4a', '.webm')):
+                file_type = 'voice'
+        
+        # Ensure either body or file is provided
+        if body or file:
             reply_to = None
             if reply_to_id:
                 try:
@@ -376,6 +391,9 @@ def conversation_detail(request, pk):
                 conversation=conversation,
                 sender=request.user,
                 body=body,
+                file=file,
+                file_type=file_type,
+                voice_duration=int(voice_duration) if voice_duration else None,
                 reply_to=reply_to
             )
             
@@ -398,6 +416,9 @@ def conversation_detail(request, pk):
             message_data = {
                 'id': message.id,
                 'body': message.body,
+                'file_url': message.file.url if message.file else None,
+                'file_type': message.file_type,
+                'voice_duration': message.voice_duration,
                 'sender_id': message.sender.id,
                 'sender_username': message.sender.username,
                 'sender_avatar': message.sender.avatar.url if message.sender.avatar else None,
@@ -409,6 +430,7 @@ def conversation_detail(request, pk):
                 message_data['reply_to'] = {
                     'id': message.reply_to.id,
                     'body': message.reply_to.body,
+                    'file_type': message.reply_to.file_type,
                     'sender_username': message.reply_to.sender.username
                 }
             
@@ -419,6 +441,11 @@ def conversation_detail(request, pk):
                     'message': message_data
                 }
             )
+            
+            # Return JSON for AJAX requests
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                from django.http import JsonResponse
+                return JsonResponse({'success': True, 'message': message_data})
             
             return redirect('conversation', pk=pk)
     

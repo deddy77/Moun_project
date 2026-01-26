@@ -142,9 +142,19 @@ class Conversation(models.Model):
 
 
 class DirectMessage(models.Model):
+    MESSAGE_TYPES = (
+        ('text', 'Text'),
+        ('image', 'Image'),
+        ('video', 'Video'),
+        ('voice', 'Voice'),
+    )
+    
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='direct_messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
-    body = models.TextField()
+    body = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='chat_media/', blank=True, null=True)
+    file_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='text')
+    voice_duration = models.IntegerField(blank=True, null=True, help_text='Duration in seconds for voice messages')
     is_read = models.BooleanField(default=False)
     reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
     created = models.DateTimeField(auto_now_add=True)
@@ -154,4 +164,6 @@ class DirectMessage(models.Model):
         ordering = ['created']
 
     def __str__(self):
+        if self.file_type != 'text':
+            return f'{self.sender.username}: [{self.file_type.upper()}]'
         return f'{self.sender.username}: {self.body[:50]}'

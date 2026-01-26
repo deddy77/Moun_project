@@ -56,15 +56,38 @@
     .messages-container {
         flex: 1;
         overflow-y: auto;
-        padding: 2rem 1.5rem;
-        background: linear-gradient(180deg, #f9fafb, #ffffff);
+        overflow-x: hidden;
+        padding: 1.5rem 1rem;
+        background: #1C1C1C;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .date-separator {
+        text-align: center;
+        margin: 1.5rem 0 1rem 0;
+        position: relative;
+    }
+
+    .date-separator span {
+        background: #2E2E2E;
+        color: #00FFFF;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .message {
         display: flex;
-        margin-bottom: 1.5rem;
-        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        gap: 0.5rem;
         animation: fadeIn 0.3s ease-in;
+        align-items: flex-end;
     }
 
     @keyframes fadeIn {
@@ -74,129 +97,340 @@
 
     .message.sent {
         flex-direction: row-reverse;
+        justify-content: flex-start;
+    }
+
+    .message.received {
+        justify-content: flex-start;
     }
 
     .message-avatar {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         object-fit: cover;
         flex-shrink: 0;
         border: 2px solid var(--color-light);
+        align-self: flex-end;
     }
 
     .message-content {
-        max-width: 70%;
-        display: inline-flex;
+        max-width: 75%;
+        display: flex;
         flex-direction: column;
+        position: relative;
     }
 
     .message.sent .message-content {
         align-items: flex-end;
     }
 
+    .message.received .message-content {
+        align-items: flex-start;
+    }
+
+    .sender-name {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #00FFFF;
+        margin-bottom: 0.25rem;
+        padding: 0 0.5rem;
+    }
+
     .message-bubble {
-        padding: 0.65rem 1rem;
-        border-radius: 18px;
+        padding: 0.5rem 0.75rem;
+        border-radius: 16px;
         word-wrap: break-word;
         white-space: pre-wrap;
-        line-height: 1.5;
-        font-size: 0.95rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        line-height: 1.4;
+        font-size: 0.9rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         display: inline-block;
         width: fit-content;
+        position: relative;
+        padding-bottom: 1.3rem;
     }
 
     .message.received .message-bubble {
-        background: white;
-        border: 2px solid var(--color-light);
-        color: var(--color-dark);
+        background: #2E2E2E;
+        color: #E0E0E0;
+        border-top-left-radius: 4px;
+        border: 1px solid #3C3C3C;
     }
 
     .message.sent .message-bubble {
-        background: linear-gradient(135deg, var(--color-main), #4db8e8);
-        color: white;
-        border: none;
+        background: linear-gradient(135deg, #008080, #3A7CA5);
+        color: #F5F5F5;
+        border-top-right-radius: 4px;
     }
 
     .message-time {
-        font-size: 0.75rem;
-        color: var(--color-gray);
-        margin-top: 0.4rem;
-        padding: 0 0.5rem;
-        font-weight: 500;
+        position: absolute;
+        bottom: 0.3rem;
+        right: 0.6rem;
+        font-size: 0.65rem;
+        font-weight: 400;
+        opacity: 0.7;
+    }
+
+    .message.received .message-time {
+        color: #A0A0A0;
     }
 
     .message.sent .message-time {
-        text-align: right;
+        color: rgba(245, 245, 245, 0.7);
     }
 
     .message-form {
-        padding: 1.25rem;
-        border-top: 2px solid var(--color-main-light);
-        background: white;
+        padding: 0.5rem 1rem 0.75rem 1rem;
+        border-top: 1px solid #2E2E2E;
+        background: #1C1C1C;
+    }
+
+    .message-input-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.5rem;
+    }
+
+    .input-field-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        background: #2E2E2E;
+        border-radius: 24px;
+        padding: 0.4rem 0.7rem 0.4rem 0.4rem;
+        border: 1px solid #3C3C3C;
+        transition: border-color 0.2s;
+        gap: 0.4rem;
+    }
+
+    .input-field-wrapper:focus-within {
+        border-color: #00FFFF;
     }
 
     .message-input-wrapper {
+        flex: 1;
         display: flex;
-        gap: 0.75rem;
-        align-items: flex-end;
+        align-items: center;
+    }
+
+    .media-buttons {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+    }
+
+    .media-btn {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: #8696A0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        padding: 0;
+    }
+
+    .media-btn:hover {
+        background: rgba(134, 150, 160, 0.1);
+    }
+
+    .media-btn:active {
+        transform: scale(0.95);
+    }
+
+    .media-btn.recording {
+        color: #FF4444;
+        animation: pulse 1.5s infinite;
+    }
+
+    .media-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke-width: 2;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
 
     .message-input {
         flex: 1;
-        padding: 0.9rem 1.25rem;
-        border: 2px solid var(--color-light);
-        border-radius: 24px;
-        font-size: 16px;
+        padding: 0.6rem 0.5rem;
+        border: none;
+        border-radius: 20px;
+        font-size: 15px;
         resize: none;
-        max-height: 120px;
+        max-height: 100px;
         font-family: inherit;
-        line-height: 1.5;
+        line-height: 1.4;
         transition: all 0.2s ease;
-        background: #f9fafb;
+        background: transparent;
+        color: #E0E0E0;
+        outline: none;
     }
 
-    .message-input:focus {
-        outline: none;
-        border-color: var(--color-main);
-        background: white;
-        box-shadow: 0 0 0 3px rgba(113, 198, 221, 0.1);
+    .message-input::placeholder {
+        color: #8696A0;
     }
 
     .send-button {
-        background: linear-gradient(135deg, var(--color-main), #5dd693);
-        color: white;
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        background: linear-gradient(135deg, #008080, #3A7CA5);
+        color: #FFFFFF;
         border: none;
-        padding: 0.9rem 1.75rem;
-        border-radius: 24px;
+        border-radius: 50%;
         cursor: pointer;
-        font-weight: 700;
-        font-size: 0.95rem;
         transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(113, 198, 221, 0.3);
+        box-shadow: 0 2px 6px rgba(0, 128, 128, 0.25);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 0;
+    }
+
+    .send-button.visible {
+        display: flex;
+    }
+
+    .send-button svg {
+        width: 22px;
+        height: 22px;
+        stroke-width: 2.5;
     }
 
     .send-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(113, 198, 221, 0.4);
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(0, 128, 128, 0.35);
     }
 
     .send-button:active {
-        transform: translateY(0);
+        transform: scale(0.95);
     }
 
     .send-button:disabled {
-        background: var(--color-light-gray);
+        background: #4A4A4A;
         cursor: not-allowed;
         box-shadow: none;
         transform: none;
+        opacity: 0.6;
+    }
+
+    /* Sticker picker */
+    .sticker-picker {
+        position: absolute;
+        bottom: 70px;
+        left: 1rem;
+        right: 1rem;
+        max-width: 400px;
+        background: #2E2E2E;
+        border: 2px solid #3C3C3C;
+        border-radius: 16px;
+        padding: 1rem;
+        display: none;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+        z-index: 100;
+    }
+
+    .sticker-picker.active {
+        display: block;
+        animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .sticker-picker-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #3C3C3C;
+    }
+
+    .sticker-picker-title {
+        color: #00FFFF;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .sticker-picker-close {
+        background: none;
+        border: none;
+        color: #808080;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+
+    .sticker-picker-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #E0E0E0;
+    }
+
+    .sticker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 0.5rem;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .sticker-item {
+        font-size: 2.5rem;
+        text-align: center;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+        background: transparent;
+        border: none;
+    }
+
+    .sticker-item:hover {
+        background: rgba(0, 255, 255, 0.1);
+        transform: scale(1.2);
+    }
+
+    .sticker-item:active {
+        transform: scale(0.95);
     }
 
     .empty-messages {
         text-align: center;
         padding: 3rem 2rem;
-        color: var(--color-dark-light);
+        color: #808080;
     }
 
     .empty-messages p {
@@ -204,16 +438,77 @@
         margin: 0;
     }
 
+    /* Media message styles */
+    .message-media {
+        max-width: 280px;
+        margin-bottom: 0.3rem;
+    }
+
+    .message-media img {
+        width: 100%;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .message-media video {
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    .message-media audio {
+        width: 100%;
+    }
+
+    .voice-message {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem;
+    }
+
+    .voice-play-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.2);
+        border: 2px solid #00FFFF;
+        color: #00FFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .voice-waveform {
+        flex: 1;
+        height: 32px;
+        background: repeating-linear-gradient(
+            90deg,
+            #00FFFF 0px,
+            #00FFFF 2px,
+            transparent 2px,
+            transparent 6px
+        );
+        border-radius: 16px;
+        opacity: 0.3;
+    }
+
+    .voice-duration {
+        font-size: 0.75rem;
+        opacity: 0.7;
+    }
+
     /* Reply feature styles */
     .reply-preview {
         display: none;
-        background: linear-gradient(135deg, rgba(113, 198, 221, 0.08), rgba(93, 214, 147, 0.08));
+        background: #2E2E2E;
         padding: 0.6rem 0.9rem;
-        border-left: 3px solid var(--color-main);
+        border-left: 3px solid #00FFFF;
         margin-bottom: 0.5rem;
         border-radius: 12px;
         position: relative;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     .reply-preview.active {
@@ -242,16 +537,16 @@
     .reply-preview-title {
         font-size: 0.75rem;
         font-weight: 600;
-        color: var(--color-main);
+        color: #00FFFF;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
     .reply-preview-close {
-        background: rgba(113, 198, 221, 0.15);
+        background: rgba(0, 255, 255, 0.15);
         border: none;
         font-size: 1rem;
-        color: var(--color-main);
+        color: #00FFFF;
         cursor: pointer;
         padding: 0;
         width: 22px;
@@ -264,34 +559,41 @@
     }
 
     .reply-preview-close:hover {
-        background: rgba(113, 198, 221, 0.25);
+        background: rgba(0, 255, 255, 0.25);
         transform: rotate(90deg);
     }
 
     .reply-preview-body {
-        font-size: 0.85rem;
-        color: var(--color-dark);
+        font-size: 0.8rem;
+        color: #B0B0B0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        opacity: 0.85;
+        font-style: italic;
     }
 
     .message-with-reply .replied-message {
-        background: rgba(113, 198, 221, 0.1);
-        padding: 0.5rem 0.7rem;
-        border-left: 2px solid rgba(113, 198, 221, 0.5);
-        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.4rem 0.6rem;
+        border-left: 3px solid #00FFFF;
+        border-radius: 6px;
         margin-bottom: 0.5rem;
         font-size: 0.8rem;
-        color: var(--color-dark-light);
+        color: #B0B0B0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-style: italic;
+    }
+
+    .message.sent .message-with-reply .replied-message {
+        background: rgba(255, 255, 255, 0.15);
+        color: rgba(245, 245, 245, 0.8);
+        border-left-color: rgba(245, 245, 245, 0.6);
     }
 
     .replied-message strong {
-        color: var(--color-main);
+        color: #00FFFF;
         font-size: 0.75rem;
         display: block;
         margin-bottom: 0.15rem;
@@ -349,32 +651,73 @@
 
     <div class="messages-container" id="messages">
         {% for message in messages %}
+            {% ifchanged message.created|date:"Y-m-d" %}
+                <div class="date-separator">
+                    <span>
+                        {% now "Y-m-d" as today %}
+                        {% now "Y-m-d"|date:"U" as today_timestamp %}
+                        {% with message.created|date:"Y-m-d" as msg_date %}
+                            {% with message.created|date:"U" as msg_timestamp %}
+                                {% if msg_date == today %}
+                                    Today
+                                {% else %}
+                                    {% with today_timestamp|add:"-86400" as yesterday_timestamp %}
+                                        {% if msg_timestamp >= yesterday_timestamp|stringformat:"s" %}
+                                            Yesterday
+                                        {% else %}
+                                            {{ message.created|date:"l, F j, Y" }}
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endwith %}
+                        {% endwith %}
+                    </span>
+                </div>
+            {% endifchanged %}
             <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}" 
                  data-message-id="{{ message.id }}"
                  data-message-body="{{ message.body }}"
                  data-sender="{{ message.sender.username }}">
-                {% if message.sender != request.user %}
-                    {% if message.sender.avatar %}
-                        <img src="{{ message.sender.avatar.url }}" alt="{{ message.sender.username }}" class="message-avatar">
-                    {% else %}
-                        <div class="message-avatar" style="background: linear-gradient(135deg, var(--color-main-light), var(--color-main));"></div>
-                    {% endif %}
-                {% endif %}
                 
                 <div class="message-content">
                     <div class="message-bubble-wrapper">
                         <div class="message-bubble {% if message.reply_to %}message-with-reply{% endif %}">
                             {% if message.reply_to %}
                                 <div class="replied-message">
-                                    <strong>{{ message.reply_to.sender.username }}:</strong> {{ message.reply_to.body|truncatewords:10 }}
+                                    <strong>{{ message.reply_to.sender.username }}:</strong> 
+                                    {% if message.reply_to.file_type == 'image' %}📷 Photo
+                                    {% elif message.reply_to.file_type == 'video' %}🎥 Video
+                                    {% elif message.reply_to.file_type == 'voice' %}🎤 Voice message
+                                    {% else %}{{ message.reply_to.body|truncatewords:10 }}
+                                    {% endif %}
                                 </div>
                             {% endif %}
-                            {{ message.body }}
+                            
+                            {% if message.file_type == 'image' %}
+                                <div class="message-media">
+                                    <img src="{{ message.file.url }}" alt="Image" loading="lazy">
+                                </div>
+                            {% elif message.file_type == 'video' %}
+                                <div class="message-media">
+                                    <video controls>
+                                        <source src="{{ message.file.url }}" type="video/mp4">
+                                    </video>
+                                </div>
+                            {% elif message.file_type == 'voice' %}
+                                <div class="voice-message">
+                                    <button class="voice-play-btn" onclick="playVoice(this, '{{ message.file.url }}')">▶</button>
+                                    <div class="voice-waveform"></div>
+                                    <span class="voice-duration">{{ message.voice_duration|default:"0:00" }}s</span>
+                                    <audio style="display:none;" src="{{ message.file.url }}"></audio>
+                                </div>
+                            {% endif %}
+                            
+                            {% if message.body %}
+                                {{ message.body }}
+                            {% endif %}
+                            <span class="message-time">{{ message.created|date:"g:i A" }}</span>
                         </div>
                         <span class="reply-indicator">↩️</span>
-                    </div>
-                    <div class="message-time">
-                        {{ message.created|date:"M d, g:i A" }}
                     </div>
                 </div>
             </div>
@@ -385,9 +728,13 @@
         {% endfor %}
     </div>
 
-    <form method="POST" class="message-form" id="messageForm">
+    <form method="POST" class="message-form" id="messageForm" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="reply_to_id" id="replyToId" value="">
+        <input type="hidden" name="voice_duration" id="voiceDuration" value="">
+        <input type="file" id="imageInput" name="file" accept="image/*" style="display:none;">
+        <input type="file" id="videoInput" name="file" accept="video/*" style="display:none;">
+        <input type="file" id="fileInput" name="file" style="display:none;">
         
         <!-- Reply Preview -->
         <div class="reply-preview" id="replyPreview">
@@ -398,24 +745,171 @@
             <div class="reply-preview-body" id="replyPreviewBody"></div>
         </div>
         
-        <div class="message-input-wrapper">
-            <textarea 
-                name="body" 
-                class="message-input" 
-                placeholder="Type your message..." 
-                rows="1"
-                required
-                id="messageInput"
-            ></textarea>
-            <button type="submit" class="send-button">Send</button>
+        <!-- Sticker Picker -->
+        <div class="sticker-picker" id="stickerPicker">
+            <div class="sticker-picker-header">
+                <span class="sticker-picker-title">Choose a sticker</span>
+                <button type="button" class="sticker-picker-close" onclick="closeStickerPicker()">×</button>
+            </div>
+            <div class="sticker-grid" id="stickerGrid"></div>
+        </div>
+        
+        <div class="message-input-container">
+            <div class="input-field-wrapper">
+                <div class="media-buttons">
+                    <button type="button" class="media-btn" onclick="toggleStickerPicker()" title="Emoji">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="message-input-wrapper">
+                    <textarea 
+                        name="body" 
+                        class="message-input" 
+                        placeholder="Message" 
+                        rows="1"
+                        id="messageInput"
+                        oninput="toggleSendButton()"
+                    ></textarea>
+                </div>
+                <div class="media-buttons">
+                    <button type="button" class="media-btn" id="attachBtn" onclick="document.getElementById('imageInput').click()" title="Attach">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="media-btn" id="cameraBtn" onclick="document.getElementById('imageInput').click()" title="Camera">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="media-btn" id="voiceBtn" onclick="toggleVoiceRecording()" title="Voice message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+                            <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="send-button" id="sendBtn" title="Send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
         </div>
     </form>
 </div>
 
 <script>
+    // Sticker collection
+    const stickers = [
+        '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+        '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙',
+        '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔',
+        '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔',
+        '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵',
+        '🥶', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟',
+        '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨',
+        '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩',
+        '😫', '🥱', '😤', '😡', '😠', '🤬', '👍', '👎', '👏', '🙌',
+        '👋', '🤝', '🙏', '💪', '🎉', '🎊', '🎈', '🎁', '🏆', '⚽',
+        '🏀', '🎯', '🎮', '🎲', '🎵', '🎶', '🎤', '🎧', '🎸', '🎹',
+        '❤️', '💕', '💖', '💗', '💙', '💚', '💛', '🧡', '💜', '🖤',
+        '💔', '❣️', '💞', '💝', '💘', '💌', '💋', '💯', '💢', '💥',
+        '🔥', '⚡', '💫', '⭐', '🌟', '✨', '💦', '💨', '☀️', '⛅',
+        '☁️', '🌧️', '⛈️', '🌩️', '🌨️', '❄️', '☃️', '⛄', '🌈', '🌊'
+    ];
+
+    // Initialize sticker picker
+    function initializeStickerPicker() {
+        const stickerGrid = document.getElementById('stickerGrid');
+        stickers.forEach(sticker => {
+            const stickerBtn = document.createElement('button');
+            stickerBtn.type = 'button';
+            stickerBtn.className = 'sticker-item';
+            stickerBtn.textContent = sticker;
+            stickerBtn.onclick = () => sendSticker(sticker);
+            stickerGrid.appendChild(stickerBtn);
+        });
+    }
+
+    function toggleStickerPicker() {
+        const picker = document.getElementById('stickerPicker');
+        picker.classList.toggle('active');
+    }
+
+    function closeStickerPicker() {
+        document.getElementById('stickerPicker').classList.remove('active');
+    }
+
+    function sendSticker(sticker) {
+        messageInput.value = sticker;
+        closeStickerPicker();
+        toggleSendButton();
+        submitMessage();
+    }
+
+    // Toggle send button visibility based on input
+    function toggleSendButton() {
+        const sendBtn = document.getElementById('sendBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const attachBtn = document.getElementById('attachBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const hasText = messageInput.value.trim().length > 0;
+        
+        if (hasText) {
+            sendBtn.classList.add('visible');
+            voiceBtn.style.display = 'none';
+            attachBtn.style.display = 'none';
+            cameraBtn.style.display = 'none';
+        } else {
+            sendBtn.classList.remove('visible');
+            voiceBtn.style.display = 'flex';
+            attachBtn.style.display = 'flex';
+            cameraBtn.style.display = 'flex';
+        }
+    }
+
+    // Initialize on load
+    initializeStickerPicker();
+    toggleSendButton();
+
     // Auto-scroll to bottom on page load
     const messagesContainer = document.getElementById('messages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Aggressive scroll to bottom function
+    function scrollToBottom(instant = false) {
+        if (instant) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            messagesContainer.scrollTo({
+                top: messagesContainer.scrollHeight,
+                behavior: 'instant'
+            });
+        }
+    }
+    
+    // Execute multiple times to ensure it works
+    scrollToBottom(true);
+    requestAnimationFrame(() => scrollToBottom(true));
+    setTimeout(() => scrollToBottom(true), 50);
+    setTimeout(() => scrollToBottom(true), 200);
+    setTimeout(() => scrollToBottom(true), 500);
+    
+    // Also execute after images/media load
+    window.addEventListener('load', () => scrollToBottom(true));
+    
+    // Watch for any changes in the messages container
+    const observer = new MutationObserver(() => scrollToBottom(true));
+    observer.observe(messagesContainer, { childList: true, subtree: true });
 
     // Auto-resize textarea
     const messageInput = document.getElementById('messageInput');
@@ -428,26 +922,197 @@
     messageInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            document.getElementById('messageForm').submit();
+            submitMessage();
         }
-    });
-
-    // Smooth scroll animation
-    messagesContainer.scrollTo({
-        top: messagesContainer.scrollHeight,
-        behavior: 'smooth'
     });
 
     // Dismiss keyboard when clicking outside the input
     document.addEventListener('click', function(e) {
-        const inputWrapper = document.querySelector('.message-input-wrapper');
+        const inputContainer = document.querySelector('.message-input-container');
+        const stickerPicker = document.getElementById('stickerPicker');
         const input = document.getElementById('messageInput');
         
-        // If click is outside the input wrapper and input is focused
-        if (!inputWrapper.contains(e.target) && document.activeElement === input) {
+        // Close sticker picker if clicking outside
+        if (stickerPicker.classList.contains('active') && !stickerPicker.contains(e.target) && !e.target.closest('.media-btn')) {
+            closeStickerPicker();
+        }
+        
+        // If click is outside the input container and input is focused
+        if (!inputContainer.contains(e.target) && document.activeElement === input) {
             input.blur();
         }
     });
+
+    // AJAX message submission
+    const messageForm = document.getElementById('messageForm');
+    const sendButton = messageForm.querySelector('.send-button');
+    let isSubmitting = false;
+
+    messageForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitMessage();
+    });
+
+    function submitMessage() {
+        if (isSubmitting) return; // Prevent double submission
+        
+        const messageBody = messageInput.value.trim();
+        const fileInput = document.querySelector('input[type="file"][name="file"]');
+        const hasFile = fileInput && fileInput.files.length > 0;
+        
+        // Require either text or file
+        if (!messageBody && !hasFile) return;
+        
+        // Disable button and set submitting flag
+        isSubmitting = true;
+        sendButton.disabled = true;
+        const originalContent = sendButton.innerHTML;
+        sendButton.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="animation: spin 1s linear infinite;">
+            <circle cx="12" cy="12" r="10"/>
+        </svg>`;
+        
+        const formData = new FormData(messageForm);
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Add message to chat immediately for sender
+                addMessageToChat(data.message);
+                
+                // Clear input and reply preview
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                cancelReply();
+                toggleSendButton();
+            }
+        })
+        .catch(error => {
+            console.error('Error sending message:', error);
+            alert('Failed to send message. Please try again.');
+        })
+        .finally(() => {
+            // Re-enable button and clear file inputs
+            isSubmitting = false;
+            sendButton.disabled = false;
+            sendButton.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>`;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('videoInput').value = '';
+            document.getElementById('voiceDuration').value = '';
+        });
+    }
+
+    // File input handlers
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            messageInput.placeholder = `📷 ${this.files[0].name}`;
+            submitMessage();
+        }
+    });
+
+    document.getElementById('videoInput').addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            messageInput.placeholder = `🎥 ${this.files[0].name}`;
+            submitMessage();
+        }
+    });
+
+    // Voice recording
+    let mediaRecorder;
+    let audioChunks = [];
+    let recordingStartTime;
+
+    async function toggleVoiceRecording() {
+        const voiceBtn = document.getElementById('voiceBtn');
+        
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            // Stop recording
+            mediaRecorder.stop();
+            voiceBtn.classList.remove('recording');
+        } else {
+            // Start recording
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                recordingStartTime = Date.now();
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const duration = Math.floor((Date.now() - recordingStartTime) / 1000);
+                    
+                    // Create file from blob
+                    const file = new File([audioBlob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    
+                    // Set to hidden file input
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.name = 'file';
+                    fileInput.files = dataTransfer.files;
+                    fileInput.style.display = 'none';
+                    
+                    // Remove old file inputs and add new one
+                    messageForm.querySelectorAll('input[type="file"]').forEach(input => {
+                        if (input.id !== 'imageInput' && input.id !== 'videoInput') {
+                            input.remove();
+                        }
+                    });
+                    messageForm.appendChild(fileInput);
+                    
+                    // Set duration
+                    document.getElementById('voiceDuration').value = duration;
+                    
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    // Reset button visibility
+                    toggleSendButton();
+                    
+                    // Submit
+                    submitMessage();
+                };
+                
+                mediaRecorder.start();
+                voiceBtn.classList.add('recording');
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                alert('Could not access microphone. Please check permissions.');
+            }
+        }
+    }
+
+    // Play voice message
+    function playVoice(button, url) {
+        const audio = button.parentElement.querySelector('audio');
+        if (audio.paused) {
+            audio.play();
+            button.textContent = '⏸';
+            audio.onended = () => {
+                button.textContent = '▶';
+            };
+        } else {
+            audio.pause();
+            button.textContent = '▶';
+        }
+    }
 
     // Reply feature - Swipe to reply
     let touchStartX = 0;
@@ -471,11 +1136,13 @@
     document.querySelectorAll('.message').forEach(message => {
         const wrapper = message.querySelector('.message-bubble-wrapper');
         const indicator = message.querySelector('.reply-indicator');
+        let isHorizontalSwipe = false;
         
         message.addEventListener('touchstart', function(e) {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             currentSwipeElement = wrapper;
+            isHorizontalSwipe = false;
         }, { passive: true });
 
         message.addEventListener('touchmove', function(e) {
@@ -486,9 +1153,15 @@
             const diffX = touchX - touchStartX;
             const diffY = touchY - touchStartY;
             
+            // Determine if it's a horizontal swipe on first significant movement
+            if (!isHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+                isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+            }
+            
             // Only respond to horizontal swipes (not vertical scrolls)
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 20) {
+            if (isHorizontalSwipe && Math.abs(diffX) > 20) {
                 e.preventDefault();
+                e.stopPropagation();
                 
                 // Limit swipe distance
                 const maxSwipe = 80;
@@ -572,7 +1245,7 @@
             console.log('[Chat] 📨 Received:', data);
             
             if (data.type === 'new_message') {
-                // Don't add message from current user (already added on page reload)
+                // Add message for other user (sender already added it via AJAX response)
                 if (data.message.sender_id !== currentUserId) {
                     addMessageToChat(data.message);
                 }
@@ -618,26 +1291,64 @@
             }
         }
         
+        let senderNameHtml = '';
+        if (isReceived) {
+            senderNameHtml = `<span class="sender-name">${message.sender_username}</span>`;
+        }
+        
         let replyHtml = '';
         if (message.reply_to) {
+            let replyContent = '';
+            if (message.reply_to.file_type === 'image') {
+                replyContent = '📷 Photo';
+            } else if (message.reply_to.file_type === 'video') {
+                replyContent = '🎥 Video';
+            } else if (message.reply_to.file_type === 'voice') {
+                replyContent = '🎤 Voice message';
+            } else {
+                replyContent = truncateText(message.reply_to.body || '', 10);
+            }
             replyHtml = `
                 <div class="replied-message">
-                    <strong>${message.reply_to.sender_username}:</strong> ${truncateText(message.reply_to.body, 10)}
+                    <strong>${message.reply_to.sender_username}:</strong> ${replyContent}
                 </div>
             `;
         }
         
+        // Build media content
+        let mediaHtml = '';
+        if (message.file_type === 'image' && message.file_url) {
+            mediaHtml = `<div class="message-media"><img src="${message.file_url}" alt="Image" loading="lazy"></div>`;
+        } else if (message.file_type === 'video' && message.file_url) {
+            mediaHtml = `<div class="message-media"><video controls><source src="${message.file_url}" type="video/mp4"></video></div>`;
+        } else if (message.file_type === 'voice' && message.file_url) {
+            const duration = message.voice_duration || '0:00';
+            mediaHtml = `
+                <div class="voice-message">
+                    <button class="voice-play-btn" onclick="playVoice(this, '${message.file_url}')">▶</button>
+                    <div class="voice-waveform"></div>
+                    <span class="voice-duration">${duration}s</span>
+                    <audio style="display:none;" src="${message.file_url}"></audio>
+                </div>
+            `;
+        }
+        
+        // Extract time from created timestamp
+        const timeOnly = message.created.split(',')[1]?.trim() || message.created;
+        
         messageDiv.innerHTML = `
             ${avatarHtml}
             <div class="message-content">
+                ${senderNameHtml}
                 <div class="message-bubble-wrapper">
                     <div class="message-bubble ${message.reply_to ? 'message-with-reply' : ''}">
                         ${replyHtml}
-                        ${message.body}
+                        ${mediaHtml}
+                        ${message.body || ''}
+                        <span class="message-time">${timeOnly}</span>
                     </div>
                     <span class="reply-indicator">↩️</span>
                 </div>
-                <div class="message-time">${message.created}</div>
             </div>
         `;
         
@@ -678,11 +1389,13 @@
         let localTouchStartX = 0;
         let localTouchStartY = 0;
         let localCurrentSwipeElement = null;
+        let localIsHorizontalSwipe = false;
         
         message.addEventListener('touchstart', function(e) {
             localTouchStartX = e.touches[0].clientX;
             localTouchStartY = e.touches[0].clientY;
             localCurrentSwipeElement = wrapper;
+            localIsHorizontalSwipe = false;
         }, { passive: true });
 
         message.addEventListener('touchmove', function(e) {
@@ -693,8 +1406,14 @@
             const diffX = touchX - localTouchStartX;
             const diffY = touchY - localTouchStartY;
             
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 20) {
+            // Determine if it's a horizontal swipe on first significant movement
+            if (!localIsHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+                localIsHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+            }
+            
+            if (localIsHorizontalSwipe && Math.abs(diffX) > 20) {
                 e.preventDefault();
+                e.stopPropagation();
                 const maxSwipe = 80;
                 const swipeDistance = Math.min(Math.abs(diffX), maxSwipe);
                 const direction = message.classList.contains('sent') ? -1 : 1;
