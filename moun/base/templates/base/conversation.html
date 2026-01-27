@@ -427,6 +427,280 @@
         transform: scale(0.95);
     }
 
+    /* Voice Recording UI */
+    .voice-recording-overlay {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, #1C1C1C 0%, #1C1C1C 90%, transparent 100%);
+        padding: 2rem 1rem 1rem;
+        display: none;
+        z-index: 200;
+        transition: all 0.3s ease;
+    }
+
+    .voice-recording-overlay.active {
+        display: block;
+        animation: slideUpOverlay 0.3s ease;
+    }
+
+    @keyframes slideUpOverlay {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .voice-recording-content {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .voice-recording-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .recording-timer {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #00FFFF;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .recording-timer.warning {
+        color: #FF4444;
+        animation: pulse 1s infinite;
+    }
+
+    .lock-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: #8696A0;
+        font-size: 0.85rem;
+    }
+
+    .lock-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .lock-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: #00FFFF;
+        stroke-width: 2;
+    }
+
+    .lock-icon.locked {
+        background: rgba(0, 255, 255, 0.3);
+    }
+
+    .waveform-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        height: 60px;
+        margin: 1.5rem 0;
+    }
+
+    .waveform-bar {
+        width: 4px;
+        background: linear-gradient(to top, #008080, #00FFFF);
+        border-radius: 2px;
+        transition: height 0.1s ease;
+        animation: waveAnimation 1s ease-in-out infinite;
+    }
+
+    @keyframes waveAnimation {
+        0%, 100% { height: 10px; }
+        50% { height: 40px; }
+    }
+
+    .recording-controls {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .voice-control-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .voice-control-btn svg {
+        width: 28px;
+        height: 28px;
+        stroke-width: 2.5;
+    }
+
+    .cancel-btn {
+        background: #FF4444;
+        color: #FFFFFF;
+    }
+
+    .cancel-btn:hover {
+        background: #FF3333;
+        transform: scale(1.05);
+    }
+
+    .send-voice-btn {
+        background: linear-gradient(135deg, #008080, #3A7CA5);
+        color: #FFFFFF;
+    }
+
+    .send-voice-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 128, 128, 0.4);
+    }
+
+    .pause-btn {
+        background: #2E2E2E;
+        color: #00FFFF;
+        border: 2px solid #00FFFF;
+    }
+
+    .pause-btn:hover {
+        background: rgba(0, 255, 255, 0.1);
+    }
+
+    .slide-instructions {
+        margin-top: 1.5rem;
+        color: #8696A0;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .slide-instruction {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Voice Message Playback */
+    .voice-message {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem;
+        min-width: 200px;
+    }
+
+    .voice-play-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.2);
+        border: 2px solid #00FFFF;
+        color: #00FFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .voice-play-btn:hover {
+        background: rgba(0, 255, 255, 0.3);
+        transform: scale(1.05);
+    }
+
+    .voice-play-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+    }
+
+    .voice-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .voice-progress-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .voice-waveform {
+        flex: 1;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        cursor: pointer;
+    }
+
+    .voice-waveform-bar {
+        flex: 1;
+        height: 100%;
+        background: rgba(0, 255, 255, 0.3);
+        border-radius: 2px;
+        transition: all 0.2s;
+        position: relative;
+    }
+
+    .voice-waveform-bar.played {
+        background: #00FFFF;
+    }
+
+    .voice-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.7rem;
+        color: #8696A0;
+    }
+
+    .voice-duration {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .voice-speed {
+        background: rgba(0, 255, 255, 0.1);
+        padding: 0.15rem 0.4rem;
+        border-radius: 8px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s;
+    }
+
+    .voice-speed:hover {
+        background: rgba(0, 255, 255, 0.2);
+    }
+
     .empty-messages {
         text-align: center;
         padding: 3rem 2rem;
@@ -704,10 +978,25 @@
                                     </video>
                                 </div>
                             {% elif message.file_type == 'voice' %}
-                                <div class="voice-message">
-                                    <button class="voice-play-btn" onclick="playVoice(this, '{{ message.file.url }}')">▶</button>
-                                    <div class="voice-waveform"></div>
-                                    <span class="voice-duration">{{ message.voice_duration|default:"0:00" }}s</span>
+                                <div class="voice-message" data-message-id="{{ message.id }}">
+                                    <button class="voice-play-btn" onclick="playVoice(this, '{{ message.file.url }}', {{ message.id }})">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 3 19 12 5 21 5 3"/>
+                                        </svg>
+                                    </button>
+                                    <div class="voice-content">
+                                        <div class="voice-progress-container">
+                                            <div class="voice-waveform">
+                                                {% for i in "12345678910111213141516171819202122232425" %}
+                                                    <div class="voice-waveform-bar"></div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="voice-info">
+                                            <span class="voice-duration">{{ message.voice_duration|default:"0" }}s</span>
+                                            <span class="voice-speed" onclick="cyclePlaybackSpeed({{ message.id }}, this)">1x</span>
+                                        </div>
+                                    </div>
                                     <audio style="display:none;" src="{{ message.file.url }}"></audio>
                                 </div>
                             {% endif %}
@@ -788,7 +1077,7 @@
                             <circle cx="12" cy="13" r="4"/>
                         </svg>
                     </button>
-                    <button type="button" class="media-btn" id="voiceBtn" onclick="toggleVoiceRecording()" title="Voice message">
+                    <button type="button" class="media-btn" id="voiceBtn" onmousedown="startVoiceRecording(event)" ontouchstart="startVoiceRecording(event)" title="Voice message">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
                             <path d="M19 10v2a7 7 0 01-14 0v-2"/>
@@ -806,6 +1095,59 @@
             </button>
         </div>
     </form>
+
+    <!-- Voice Recording Overlay -->
+    <div class="voice-recording-overlay" id="voiceRecordingOverlay">
+        <div class="voice-recording-content">
+            <div class="voice-recording-header">
+                <div class="recording-timer" id="recordingTimer">0:00</div>
+                <div class="lock-indicator" id="lockIndicator">
+                    <div class="lock-icon" id="lockIcon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                    </div>
+                    <span id="lockText">Slide up to lock</span>
+                </div>
+            </div>
+            
+            <div class="waveform-container" id="waveformContainer"></div>
+            
+            <div class="recording-controls" id="recordingControls">
+                <button type="button" class="voice-control-btn cancel-btn" onclick="cancelVoiceRecording()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <button type="button" class="voice-control-btn pause-btn" id="pauseRecordBtn" onclick="togglePauseRecording()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="6" y="4" width="4" height="16"/>
+                        <rect x="14" y="4" width="4" height="16"/>
+                    </svg>
+                </button>
+                <button type="button" class="voice-control-btn send-voice-btn" onclick="sendVoiceRecording()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="slide-instructions">
+                <div class="slide-instruction">
+                    <span>↑ Lock</span>
+                </div>
+                <div class="slide-instruction">
+                    <span>← Cancel</span>
+                </div>
+                <div class="slide-instruction">
+                    <span>Release to send</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -879,8 +1221,12 @@
     }
 
     // Initialize on load
-    initializeStickerPicker();
-    toggleSendButton();
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('[Init] DOM Content Loaded');
+        
+        initializeStickerPicker();
+        toggleSendButton();
+    });
 
     // Auto-scroll to bottom on page load
     const messagesContainer = document.getElementById('messages');
@@ -957,11 +1303,24 @@
         if (isSubmitting) return; // Prevent double submission
         
         const messageBody = messageInput.value.trim();
-        const fileInput = document.querySelector('input[type="file"][name="file"]');
-        const hasFile = fileInput && fileInput.files.length > 0;
+        
+        // Check all file inputs for files
+        const allFileInputs = messageForm.querySelectorAll('input[type="file"]');
+        let hasFile = false;
+        allFileInputs.forEach(input => {
+            if (input.files && input.files.length > 0) {
+                hasFile = true;
+                console.log('[Submit] Found file:', input.files[0].name, 'in input:', input.name || input.id);
+            }
+        });
+        
+        console.log('[Submit] Message body:', messageBody, 'Has file:', hasFile);
         
         // Require either text or file
-        if (!messageBody && !hasFile) return;
+        if (!messageBody && !hasFile) {
+            console.log('[Submit] Blocked: No message body and no file');
+            return;
+        }
         
         // Disable button and set submitting flag
         isSubmitting = true;
@@ -1008,9 +1367,18 @@
                 <line x1="22" y1="2" x2="11" y2="13"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>`;
+            
+            // Clear all file inputs
             document.getElementById('imageInput').value = '';
             document.getElementById('videoInput').value = '';
             document.getElementById('voiceDuration').value = '';
+            
+            // Remove dynamic voice file input
+            const voiceFileInput = document.getElementById('voiceFileInput');
+            if (voiceFileInput) {
+                voiceFileInput.remove();
+                console.log('[Submit] Removed voice file input after submission');
+            }
         });
     }
 
@@ -1029,88 +1397,491 @@
         }
     });
 
-    // Voice recording
-    let mediaRecorder;
-    let audioChunks = [];
-    let recordingStartTime;
+    // ============================================
+    // Voice Recording - WhatsApp Style
+    // ============================================
+    let voiceRecorder = {
+        mediaRecorder: null,
+        audioChunks: [],
+        stream: null,
+        startTime: null,
+        timerInterval: null,
+        isLocked: false,
+        isPaused: false,
+        touchStartY: 0,
+        touchStartX: 0,
+        MAX_DURATION: 45, // seconds
+        waveformBars: [],
+        audioContext: null,
+        analyser: null
+    };
 
-    async function toggleVoiceRecording() {
-        const voiceBtn = document.getElementById('voiceBtn');
+    function startVoiceRecording(event) {
+        console.log('[Voice] Start recording triggered', event.type);
+        event.preventDefault();
+        event.stopPropagation();
         
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
-            // Stop recording
-            mediaRecorder.stop();
-            voiceBtn.classList.remove('recording');
+        // Store touch start position
+        if (event.type === 'touchstart') {
+            voiceRecorder.touchStartY = event.touches[0].clientY;
+            voiceRecorder.touchStartX = event.touches[0].clientX;
         } else {
+            voiceRecorder.touchStartY = event.clientY;
+            voiceRecorder.touchStartX = event.clientX;
+        }
+        
+        console.log('[Voice] Starting recording initialization...');
+        
+        // Start recording
+        initializeRecording();
+        
+        // Add event listeners for gestures
+        document.addEventListener('mousemove', handleRecordingGesture);
+        document.addEventListener('touchmove', handleRecordingGesture);
+        document.addEventListener('mouseup', handleRecordingRelease);
+        document.addEventListener('touchend', handleRecordingRelease);
+    }
+
+    async function initializeRecording() {
+        try {
+            console.log('[Voice] Requesting microphone access...');
+            
+            // Request microphone access
+            voiceRecorder.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('[Voice] Microphone access granted');
+            
+            // Initialize MediaRecorder
+            voiceRecorder.mediaRecorder = new MediaRecorder(voiceRecorder.stream);
+            voiceRecorder.audioChunks = [];
+            voiceRecorder.startTime = Date.now();
+            voiceRecorder.isLocked = false;
+            voiceRecorder.isPaused = false;
+            console.log('[Voice] MediaRecorder initialized');
+            
+            // Setup audio analysis for waveform
+            setupAudioAnalysis();
+            
+            // Show overlay
+            document.getElementById('voiceRecordingOverlay').classList.add('active');
+            document.getElementById('voiceBtn').classList.add('recording');
+            console.log('[Voice] Overlay shown');
+            
+            // Initialize waveform
+            initializeWaveform();
+            
+            // Start timer
+            startRecordingTimer();
+            
             // Start recording
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                recordingStartTime = Date.now();
-                
-                mediaRecorder.ondataavailable = (event) => {
-                    audioChunks.push(event.data);
-                };
-                
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const duration = Math.floor((Date.now() - recordingStartTime) / 1000);
-                    
-                    // Create file from blob
-                    const file = new File([audioBlob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    
-                    // Set to hidden file input
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.name = 'file';
-                    fileInput.files = dataTransfer.files;
-                    fileInput.style.display = 'none';
-                    
-                    // Remove old file inputs and add new one
-                    messageForm.querySelectorAll('input[type="file"]').forEach(input => {
-                        if (input.id !== 'imageInput' && input.id !== 'videoInput') {
-                            input.remove();
-                        }
-                    });
-                    messageForm.appendChild(fileInput);
-                    
-                    // Set duration
-                    document.getElementById('voiceDuration').value = duration;
-                    
-                    // Stop all tracks
-                    stream.getTracks().forEach(track => track.stop());
-                    
-                    // Reset button visibility
-                    toggleSendButton();
-                    
-                    // Submit
-                    submitMessage();
-                };
-                
-                mediaRecorder.start();
-                voiceBtn.classList.add('recording');
-            } catch (error) {
-                console.error('Error accessing microphone:', error);
-                alert('Could not access microphone. Please check permissions.');
+            voiceRecorder.mediaRecorder.ondataavailable = (event) => {
+                voiceRecorder.audioChunks.push(event.data);
+            };
+            
+            voiceRecorder.mediaRecorder.start();
+            console.log('[Voice] Recording started successfully');
+            
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
             }
+            
+        } catch (error) {
+            console.error('[Voice] Error accessing microphone:', error);
+            alert('Could not access microphone. Please check permissions.');
         }
     }
 
-    // Play voice message
-    function playVoice(button, url) {
-        const audio = button.parentElement.querySelector('audio');
-        if (audio.paused) {
-            audio.play();
-            button.textContent = '⏸';
-            audio.onended = () => {
-                button.textContent = '▶';
-            };
+    function setupAudioAnalysis() {
+        voiceRecorder.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        voiceRecorder.analyser = voiceRecorder.audioContext.createAnalyser();
+        const source = voiceRecorder.audioContext.createMediaStreamSource(voiceRecorder.stream);
+        source.connect(voiceRecorder.analyser);
+        voiceRecorder.analyser.fftSize = 64;
+        
+        animateWaveform();
+    }
+
+    function initializeWaveform() {
+        const container = document.getElementById('waveformContainer');
+        container.innerHTML = '';
+        voiceRecorder.waveformBars = [];
+        
+        for (let i = 0; i < 30; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'waveform-bar';
+            bar.style.animationDelay = `${i * 0.05}s`;
+            container.appendChild(bar);
+            voiceRecorder.waveformBars.push(bar);
+        }
+    }
+
+    function animateWaveform() {
+        if (!voiceRecorder.analyser || voiceRecorder.isPaused) return;
+        
+        const dataArray = new Uint8Array(voiceRecorder.analyser.frequencyBinCount);
+        voiceRecorder.analyser.getByteFrequencyData(dataArray);
+        
+        voiceRecorder.waveformBars.forEach((bar, index) => {
+            const dataIndex = Math.floor(index * dataArray.length / voiceRecorder.waveformBars.length);
+            const value = dataArray[dataIndex];
+            const height = Math.max(10, (value / 255) * 50);
+            bar.style.height = `${height}px`;
+        });
+        
+        if (voiceRecorder.mediaRecorder && voiceRecorder.mediaRecorder.state === 'recording') {
+            requestAnimationFrame(animateWaveform);
+        }
+    }
+
+    function startRecordingTimer() {
+        updateTimer();
+        voiceRecorder.timerInterval = setInterval(() => {
+            updateTimer();
+            
+            // Check if max duration reached
+            const elapsed = (Date.now() - voiceRecorder.startTime) / 1000;
+            if (elapsed >= voiceRecorder.MAX_DURATION) {
+                sendVoiceRecording();
+            } else if (elapsed >= voiceRecorder.MAX_DURATION - 5) {
+                // Warning at 5 seconds remaining
+                document.getElementById('recordingTimer').classList.add('warning');
+                if (navigator.vibrate) {
+                    navigator.vibrate(100);
+                }
+            }
+        }, 100);
+    }
+
+    function updateTimer() {
+        const elapsed = (Date.now() - voiceRecorder.startTime) / 1000;
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = Math.floor(elapsed % 60);
+        document.getElementById('recordingTimer').textContent = 
+            `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function handleRecordingGesture(event) {
+        if (!voiceRecorder.mediaRecorder || voiceRecorder.isLocked) return;
+        
+        let currentY, currentX;
+        if (event.type === 'touchmove') {
+            currentY = event.touches[0].clientY;
+            currentX = event.touches[0].clientX;
         } else {
+            currentY = event.clientY;
+            currentX = event.clientX;
+        }
+        
+        const deltaY = voiceRecorder.touchStartY - currentY;
+        const deltaX = voiceRecorder.touchStartX - currentX;
+        
+        // Slide up to lock (>100px)
+        if (deltaY > 100) {
+            lockRecording();
+        }
+        
+        // Slide left to cancel (>150px)
+        if (deltaX > 150) {
+            cancelVoiceRecording();
+        }
+    }
+
+    function lockRecording() {
+        voiceRecorder.isLocked = true;
+        document.getElementById('lockIcon').classList.add('locked');
+        document.getElementById('lockText').textContent = 'Recording locked';
+        
+        // Remove gesture listeners
+        document.removeEventListener('mousemove', handleRecordingGesture);
+        document.removeEventListener('touchmove', handleRecordingGesture);
+        
+        // Haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate([50, 100, 50]);
+        }
+    }
+
+    function handleRecordingRelease(event) {
+        if (!voiceRecorder.mediaRecorder) return;
+        
+        // Remove listeners
+        document.removeEventListener('mousemove', handleRecordingGesture);
+        document.removeEventListener('touchmove', handleRecordingGesture);
+        document.removeEventListener('mouseup', handleRecordingRelease);
+        document.removeEventListener('touchend', handleRecordingRelease);
+        
+        // If locked, do nothing (user must use buttons)
+        if (voiceRecorder.isLocked) return;
+        
+        // Otherwise, send immediately
+        sendVoiceRecording();
+    }
+
+    function togglePauseRecording() {
+        if (!voiceRecorder.mediaRecorder) return;
+        
+        const pauseBtn = document.getElementById('pauseRecordBtn');
+        
+        if (voiceRecorder.isPaused) {
+            // Resume
+            voiceRecorder.isPaused = false;
+            voiceRecorder.mediaRecorder.resume();
+            pauseBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+            </svg>`;
+            animateWaveform();
+        } else {
+            // Pause
+            voiceRecorder.isPaused = true;
+            voiceRecorder.mediaRecorder.pause();
+            pauseBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>`;
+        }
+        
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
+    }
+
+    async function sendVoiceRecording() {
+        if (!voiceRecorder.mediaRecorder) return;
+        
+        // Stop recording
+        voiceRecorder.mediaRecorder.stop();
+        
+        // Stop timer
+        clearInterval(voiceRecorder.timerInterval);
+        
+        // Stop audio analysis
+        if (voiceRecorder.audioContext) {
+            voiceRecorder.audioContext.close();
+        }
+        
+        // Wait for data
+        voiceRecorder.mediaRecorder.onstop = async () => {
+            console.log('[Voice] Recording stopped, processing audio...');
+            const audioBlob = new Blob(voiceRecorder.audioChunks, { type: 'audio/webm' });
+            const duration = Math.floor((Date.now() - voiceRecorder.startTime) / 1000);
+            
+            console.log('[Voice] Audio blob size:', audioBlob.size, 'bytes, duration:', duration, 'seconds');
+            
+            // Create file from blob
+            const file = new File([audioBlob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            console.log('[Voice] Created file:', file.name, 'size:', file.size);
+            
+            // Remove old dynamic file inputs (not the original image/video inputs)
+            messageForm.querySelectorAll('input[type="file"]').forEach(input => {
+                if (input.id !== 'imageInput' && input.id !== 'videoInput' && input.id !== 'fileInput') {
+                    console.log('[Voice] Removing old file input:', input.name || input.id);
+                    input.remove();
+                }
+            });
+            
+            // Create and add new file input for voice
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = 'file';
+            fileInput.files = dataTransfer.files;
+            fileInput.style.display = 'none';
+            fileInput.id = 'voiceFileInput';
+            messageForm.appendChild(fileInput);
+            
+            console.log('[Voice] Added voice file input with', fileInput.files.length, 'files');
+            
+            // Set duration
+            document.getElementById('voiceDuration').value = duration;
+            console.log('[Voice] Set voice duration:', duration);
+            
+            // Stop all tracks
+            voiceRecorder.stream.getTracks().forEach(track => track.stop());
+            
+            // Clean up UI
+            closeVoiceRecording();
+            
+            // Submit after a small delay to ensure file input is properly attached
+            console.log('[Voice] Submitting voice message...');
+            setTimeout(() => {
+                submitMessage();
+            }, 100);
+        };
+        
+        // Haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+    }
+
+    function cancelVoiceRecording() {
+        if (!voiceRecorder.mediaRecorder) return;
+        
+        // Stop recording
+        voiceRecorder.mediaRecorder.stop();
+        
+        // Stop timer
+        clearInterval(voiceRecorder.timerInterval);
+        
+        // Stop audio analysis
+        if (voiceRecorder.audioContext) {
+            voiceRecorder.audioContext.close();
+        }
+        
+        // Stop all tracks
+        if (voiceRecorder.stream) {
+            voiceRecorder.stream.getTracks().forEach(track => track.stop());
+        }
+        
+        // Clean up
+        closeVoiceRecording();
+        
+        // Haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate([50, 50, 50]);
+        }
+    }
+
+    function closeVoiceRecording() {
+        document.getElementById('voiceRecordingOverlay').classList.remove('active');
+        document.getElementById('voiceBtn').classList.remove('recording');
+        document.getElementById('recordingTimer').classList.remove('warning');
+        document.getElementById('lockIcon').classList.remove('locked');
+        document.getElementById('lockText').textContent = 'Slide up to lock';
+        
+        // Reset recorder state
+        voiceRecorder.mediaRecorder = null;
+        voiceRecorder.audioChunks = [];
+        voiceRecorder.stream = null;
+        voiceRecorder.isLocked = false;
+        voiceRecorder.isPaused = false;
+        
+        // Remove event listeners
+        document.removeEventListener('mousemove', handleRecordingGesture);
+        document.removeEventListener('touchmove', handleRecordingGesture);
+        document.removeEventListener('mouseup', handleRecordingRelease);
+        document.removeEventListener('touchend', handleRecordingRelease);
+    }
+
+    // ============================================
+    // Voice Message Playback - Enhanced
+    // ============================================
+    const voicePlaybackStates = new Map();
+
+    function playVoice(button, url, messageId) {
+        const voiceMessage = button.closest('.voice-message');
+        const audio = voiceMessage.querySelector('audio');
+        const speedControl = voiceMessage.querySelector('.voice-speed');
+        const durationDisplay = voiceMessage.querySelector('.voice-duration');
+        const waveformBars = voiceMessage.querySelectorAll('.voice-waveform-bar');
+        
+        // Initialize state if not exists
+        if (!voicePlaybackStates.has(messageId)) {
+            voicePlaybackStates.set(messageId, {
+                playbackRate: 1.0,
+                lastPosition: 0
+            });
+        }
+        
+        const state = voicePlaybackStates.get(messageId);
+        
+        // Set playback rate
+        audio.playbackRate = state.playbackRate;
+        
+        // Resume from last position if available
+        if (state.lastPosition > 0 && audio.currentTime === 0) {
+            audio.currentTime = state.lastPosition;
+        }
+        
+        if (audio.paused) {
+            // Play
+            audio.play();
+            button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+            </svg>`;
+            
+            // Update progress
+            audio.ontimeupdate = () => {
+                updateVoiceProgress(audio, waveformBars, durationDisplay);
+                state.lastPosition = audio.currentTime;
+            };
+            
+            audio.onended = () => {
+                button.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>`;
+                state.lastPosition = 0;
+                resetVoiceProgress(waveformBars, durationDisplay, audio.duration);
+            };
+            
+        } else {
+            // Pause
             audio.pause();
-            button.textContent = '▶';
+            button.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>`;
+        }
+        
+        // Haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
+    }
+
+    function updateVoiceProgress(audio, waveformBars, durationDisplay) {
+        const progress = audio.currentTime / audio.duration;
+        const playedCount = Math.floor(progress * waveformBars.length);
+        
+        waveformBars.forEach((bar, index) => {
+            if (index < playedCount) {
+                bar.classList.add('played');
+            } else {
+                bar.classList.remove('played');
+            }
+        });
+        
+        // Update duration display
+        const remaining = audio.duration - audio.currentTime;
+        const minutes = Math.floor(remaining / 60);
+        const seconds = Math.floor(remaining % 60);
+        durationDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function resetVoiceProgress(waveformBars, durationDisplay, totalDuration) {
+        waveformBars.forEach(bar => bar.classList.remove('played'));
+        const minutes = Math.floor(totalDuration / 60);
+        const seconds = Math.floor(totalDuration % 60);
+        durationDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function cyclePlaybackSpeed(messageId, speedControl) {
+        const state = voicePlaybackStates.get(messageId) || { playbackRate: 1.0, lastPosition: 0 };
+        
+        // Cycle through speeds: 1x -> 1.5x -> 2x -> 1x
+        if (state.playbackRate === 1.0) {
+            state.playbackRate = 1.5;
+        } else if (state.playbackRate === 1.5) {
+            state.playbackRate = 2.0;
+        } else {
+            state.playbackRate = 1.0;
+        }
+        
+        voicePlaybackStates.set(messageId, state);
+        speedControl.textContent = `${state.playbackRate}x`;
+        
+        // Update audio playback rate if playing
+        const voiceMessage = speedControl.closest('.voice-message');
+        const audio = voiceMessage.querySelector('audio');
+        if (audio) {
+            audio.playbackRate = state.playbackRate;
+        }
+        
+        // Haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
         }
     }
 
@@ -1322,12 +2093,24 @@
         } else if (message.file_type === 'video' && message.file_url) {
             mediaHtml = `<div class="message-media"><video controls><source src="${message.file_url}" type="video/mp4"></video></div>`;
         } else if (message.file_type === 'voice' && message.file_url) {
-            const duration = message.voice_duration || '0:00';
+            const duration = message.voice_duration || 0;
+            const waveformBars = Array(25).fill(0).map(() => '<div class="voice-waveform-bar"></div>').join('');
             mediaHtml = `
-                <div class="voice-message">
-                    <button class="voice-play-btn" onclick="playVoice(this, '${message.file_url}')">▶</button>
-                    <div class="voice-waveform"></div>
-                    <span class="voice-duration">${duration}s</span>
+                <div class="voice-message" data-message-id="${message.id}">
+                    <button class="voice-play-btn" onclick="playVoice(this, '${message.file_url}', ${message.id})">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                    </button>
+                    <div class="voice-content">
+                        <div class="voice-progress-container">
+                            <div class="voice-waveform">${waveformBars}</div>
+                        </div>
+                        <div class="voice-info">
+                            <span class="voice-duration">${duration}s</span>
+                            <span class="voice-speed" onclick="cyclePlaybackSpeed(${message.id}, this)">1x</span>
+                        </div>
+                    </div>
                     <audio style="display:none;" src="${message.file_url}"></audio>
                 </div>
             `;

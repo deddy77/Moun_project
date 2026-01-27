@@ -371,12 +371,17 @@ def conversation_detail(request, pk):
         # Determine file type
         if file:
             file_name = file.name.lower()
-            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+            content_type = file.content_type if hasattr(file, 'content_type') else ''
+            
+            # Check by file extension and content type
+            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')) or content_type.startswith('image/'):
                 file_type = 'image'
-            elif file_name.endswith(('.mp4', '.webm', '.mov', '.avi')):
+            elif file_name.endswith(('.mp4', '.mov', '.avi')) or (content_type.startswith('video/') and 'audio' not in file_name):
                 file_type = 'video'
-            elif file_name.endswith(('.mp3', '.wav', '.ogg', '.m4a', '.webm')):
+            elif file_name.endswith(('.mp3', '.wav', '.ogg', '.m4a', '.webm')) or content_type.startswith('audio/') or 'voice_' in file_name:
                 file_type = 'voice'
+            
+            print(f"[Voice Debug] File received: {file_name}, Content-Type: {content_type}, Detected type: {file_type}, Size: {file.size}")
         
         # Ensure either body or file is provided
         if body or file:
