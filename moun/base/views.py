@@ -241,7 +241,7 @@ def updateUser(request):
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)
-    return render(request, 'base/update-user.html', {'form': form})
+    return render(request, 'base/update-user.html', {'form': form, 'user': user})
       
 
 def topicsPage(request):
@@ -367,21 +367,38 @@ def conversation_detail(request, pk):
         file = request.FILES.get('file')
         file_type = 'text'
         voice_duration = request.POST.get('voice_duration')
+        file_name_original = None
+        file_size = None
         
-        # Determine file type
+        # Determine file type and validate size
         if file:
             file_name = file.name.lower()
+            file_name_original = file.name
+            file_size = file.size
             content_type = file.content_type if hasattr(file, 'content_type') else ''
             
-            # Check by file extension and content type
-            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')) or content_type.startswith('image/'):
-                file_type = 'image'
-            elif file_name.endswith(('.mp4', '.mov', '.avi')) or (content_type.startswith('video/') and 'audio' not in file_name):
-                file_type = 'video'
-            elif file_name.endswith(('.mp3', '.wav', '.ogg', '.m4a', '.webm')) or content_type.startswith('audio/') or 'voice_' in file_name:
-                file_type = 'voice'
+            # File size limit: 100MB
+            MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB in bytes
+            if file_size > MAX_FILE_SIZE:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'File size exceeds 100MB limit'
+                }, status=400)
             
-            print(f"[Voice Debug] File received: {file_name}, Content-Type: {content_type}, Detected type: {file_type}, Size: {file.size}")
+            # Check by file extension and content type
+            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')) or content_type.startswith('image/'):
+                file_type = 'image'
+            elif file_name.endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm')) and not ('audio' in content_type or 'voice_' in file_name):
+                file_type = 'video'
+            elif file_name.endswith(('.mp3', '.wav', '.ogg', '.m4a', '.webm', '.aac', '.flac')) or content_type.startswith('audio/') or 'voice_' in file_name:
+                file_type = 'voice'
+            elif file_name.endswith(('.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.zip', '.rar', '.7z')):
+                file_type = 'document'
+            else:
+                # Default to document for unknown types
+                file_type = 'document'
+            
+            print(f"[File Upload] File: {file_name_original}, Type: {content_type}, Detected: {file_type}, Size: {file_size} bytes")
         
         # Ensure either body or file is provided
         if body or file:
@@ -398,6 +415,8 @@ def conversation_detail(request, pk):
                 body=body,
                 file=file,
                 file_type=file_type,
+                file_name=file_name_original,
+                file_size=file_size,
                 voice_duration=int(voice_duration) if voice_duration else None,
                 reply_to=reply_to
             )
@@ -423,6 +442,8 @@ def conversation_detail(request, pk):
                 'body': message.body,
                 'file_url': message.file.url if message.file else None,
                 'file_type': message.file_type,
+                'file_name': message.file_name,
+                'file_size': message.file_size,
                 'voice_duration': message.voice_duration,
                 'sender_id': message.sender.id,
                 'sender_username': message.sender.username,
@@ -447,11 +468,13 @@ def conversation_detail(request, pk):
                 }
             )
             
-            # Return JSON for AJAX requests
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                from django.http import JsonResponse
+            # Always return JSON for POST requests (modern approach)
+            # Check if it's an AJAX request or if Accept header indicates JSON
+            if (request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 
+                'application/json' in request.headers.get('Accept', '')):
                 return JsonResponse({'success': True, 'message': message_data})
             
+            # Fallback for non-AJAX requests (direct form submission)
             return redirect('conversation', pk=pk)
     
     messages_list = conversation.direct_messages.all()

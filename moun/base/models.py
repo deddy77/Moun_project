@@ -147,6 +147,7 @@ class DirectMessage(models.Model):
         ('image', 'Image'),
         ('video', 'Video'),
         ('voice', 'Voice'),
+        ('document', 'Document'),
     )
     
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='direct_messages')
@@ -154,6 +155,8 @@ class DirectMessage(models.Model):
     body = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to='chat_media/', blank=True, null=True)
     file_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='text')
+    file_name = models.CharField(max_length=255, blank=True, null=True, help_text='Original file name')
+    file_size = models.BigIntegerField(blank=True, null=True, help_text='File size in bytes')
     voice_duration = models.IntegerField(blank=True, null=True, help_text='Duration in seconds for voice messages')
     is_read = models.BooleanField(default=False)
     reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')

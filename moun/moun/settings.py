@@ -97,7 +97,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 
     'base.middleware.ActiveUserMiddleware',  # <-- Update user activity
-    'base.middleware.MobileOnlyMiddleware',  # <-- Redirect desktop users to landing page
+    # 'base.middleware.MobileOnlyMiddleware',  # <-- Redirect desktop users to landing page (DISABLED FOR DEBUGGING)
 ]
 
 ROOT_URLCONF = 'moun.urls'

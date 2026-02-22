@@ -28,9 +28,15 @@ class UserForm(ModelForm):
         model = User
         fields = [
             'name',
-            'username',
             'email',
             'avatar',
             'bio',
         ]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Prevent username modification by removing it from the form
+        # Username is unique and immutable once set
+        if 'username' in self.fields:
+            del self.fields['username']
         

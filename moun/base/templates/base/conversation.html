@@ -427,6 +427,57 @@
         transform: scale(0.95);
     }
 
+    /* Stick-moji (Animated Emoji) Styles */
+    .stickmoji {
+        font-size: 5rem;
+        display: inline-block;
+        animation: stickmojiBounce 0.6s ease-out;
+        margin: 0.5rem;
+        cursor: default;
+    }
+
+    @keyframes stickmojiBounce {
+        0% {
+            transform: scale(0) rotate(-180deg);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2) rotate(10deg);
+        }
+        70% {
+            transform: scale(0.9) rotate(-5deg);
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    }
+
+    /* Additional bounce on hover for received stick-mojis */
+    .message.received .stickmoji:hover {
+        animation: stickmojiBounceHover 0.4s ease;
+    }
+
+    @keyframes stickmojiBounceHover {
+        0%, 100% {
+            transform: scale(1) rotate(0deg);
+        }
+        25% {
+            transform: scale(1.15) rotate(-5deg);
+        }
+        75% {
+            transform: scale(1.15) rotate(5deg);
+        }
+    }
+
+    /* Stick-moji specific message bubble adjustments */
+    .message-bubble.has-stickmoji {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0.5rem;
+    }
+
     /* Voice Recording UI */
     .voice-recording-overlay {
         position: fixed;
@@ -888,6 +939,85 @@
         font-size: 1.5rem;
     }
 
+    /* Document file styles */
+    .document-attachment {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 0.75rem;
+        margin: 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .document-attachment:hover {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: #00FFFF;
+    }
+
+    .document-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        background: linear-gradient(135deg, #008080, #00FFFF);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    .document-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .document-name {
+        font-size: 0.85rem;
+        color: #E0E0E0;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0.2rem;
+    }
+
+    .document-size {
+        font-size: 0.7rem;
+        color: #8696A0;
+    }
+
+    .document-download {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        background: rgba(0, 255, 255, 0.15);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #00FFFF;
+        transition: all 0.2s ease;
+    }
+
+    .document-download:hover {
+        background: rgba(0, 255, 255, 0.25);
+        transform: scale(1.1);
+    }
+
+    .document-download svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2.5;
+    }
+
     @media (max-width: 768px) {
         .chat-container {
             margin: 1rem;
@@ -962,6 +1092,7 @@
                                     {% if message.reply_to.file_type == 'image' %}📷 Photo
                                     {% elif message.reply_to.file_type == 'video' %}🎥 Video
                                     {% elif message.reply_to.file_type == 'voice' %}🎤 Voice message
+                                    {% elif message.reply_to.file_type == 'document' %}📄 {{ message.reply_to.file_name|default:"Document" }}
                                     {% else %}{{ message.reply_to.body|truncatewords:10 }}
                                     {% endif %}
                                 </div>
@@ -997,7 +1128,43 @@
                                             <span class="voice-speed" onclick="cyclePlaybackSpeed({{ message.id }}, this)">1x</span>
                                         </div>
                                     </div>
-                                    <audio style="display:none;" src="{{ message.file.url }}"></audio>
+                                    <audio preload="metadata" controlsList="nodownload" style="position:absolute;opacity:0;pointer-events:none;">
+                                        <source src="{{ message.file.url }}" type="audio/mpeg">
+                                        <source src="{{ message.file.url }}" type="audio/mp4">
+                                        <source src="{{ message.file.url }}" type="audio/webm">
+                                        <source src="{{ message.file.url }}" type="audio/ogg">
+                                    </audio>
+                                </div>
+                            {% elif message.file_type == 'document' %}
+                                <div class="document-attachment">
+                                    <div class="document-icon">
+                                        {% if message.file_name %}
+                                            {{ message.file_name|slice:"-3:"|upper }}
+                                        {% else %}
+                                            DOC
+                                        {% endif %}
+                                    </div>
+                                    <div class="document-info">
+                                        <div class="document-name">{{ message.file_name|default:"Document" }}</div>
+                                        <div class="document-size">
+                                            {% if message.file_size %}
+                                                {% if message.file_size < 1024 %}
+                                                    {{ message.file_size }} B
+                                                {% elif message.file_size < 1048576 %}
+                                                    {{ message.file_size|filesizeformat }}
+                                                {% else %}
+                                                    {{ message.file_size|filesizeformat }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <a href="{{ message.file.url }}" download="{{ message.file_name }}" class="document-download">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                    </a>
                                 </div>
                             {% endif %}
                             
@@ -1066,15 +1233,15 @@
                     ></textarea>
                 </div>
                 <div class="media-buttons">
-                    <button type="button" class="media-btn" id="attachBtn" onclick="document.getElementById('imageInput').click()" title="Attach">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
-                        </svg>
-                    </button>
-                    <button type="button" class="media-btn" id="cameraBtn" onclick="document.getElementById('imageInput').click()" title="Camera">
+                    <button type="button" class="media-btn" onclick="document.getElementById('imageInput').click()" title="Camera">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
                             <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="media-btn" onclick="document.getElementById('fileInput').click()" title="Attach file">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
                         </svg>
                     </button>
                     <button type="button" class="media-btn" id="voiceBtn" onmousedown="startVoiceRecording(event)" ontouchstart="startVoiceRecording(event)" title="Voice message">
@@ -1196,27 +1363,34 @@
         messageInput.value = sticker;
         closeStickerPicker();
         toggleSendButton();
+        
+        // Mark this as a stick-moji for animated display
+        messageInput.dataset.isStickmoji = 'true';
+        
         submitMessage();
+    }
+
+    // Helper function to check if text is a single emoji
+    function isSingleEmoji(text) {
+        // Remove whitespace
+        const trimmed = text.trim();
+        // Check if it's a single emoji character (including compound emojis)
+        const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
+        return emojiRegex.test(trimmed) || (trimmed.length <= 2 && /[\u{1F300}-\u{1FAF8}]/u.test(trimmed));
     }
 
     // Toggle send button visibility based on input
     function toggleSendButton() {
         const sendBtn = document.getElementById('sendBtn');
         const voiceBtn = document.getElementById('voiceBtn');
-        const attachBtn = document.getElementById('attachBtn');
-        const cameraBtn = document.getElementById('cameraBtn');
         const hasText = messageInput.value.trim().length > 0;
         
         if (hasText) {
             sendBtn.classList.add('visible');
-            voiceBtn.style.display = 'none';
-            attachBtn.style.display = 'none';
-            cameraBtn.style.display = 'none';
+            if (voiceBtn) voiceBtn.style.display = 'none';
         } else {
             sendBtn.classList.remove('visible');
-            voiceBtn.style.display = 'flex';
-            attachBtn.style.display = 'flex';
-            cameraBtn.style.display = 'flex';
+            if (voiceBtn) voiceBtn.style.display = 'flex';
         }
     }
 
@@ -1226,7 +1400,41 @@
         
         initializeStickerPicker();
         toggleSendButton();
+        
+        // Apply stick-moji styling to existing messages
+        applyStickmojiStyling();
     });
+    
+    // Apply stick-moji styling to messages already in DOM
+    function applyStickmojiStyling() {
+        document.querySelectorAll('.message').forEach(messageDiv => {
+            const bubble = messageDiv.querySelector('.message-bubble');
+            const bodyText = messageDiv.dataset.messageBody;
+            
+            // Check if it's a single emoji and no file attachments
+            if (bodyText && isSingleEmoji(bodyText) && !messageDiv.querySelector('.message-media, .voice-message, .document-attachment')) {
+                bubble.classList.add('has-stickmoji');
+                
+                // Find the text node and wrap it in stickmoji span
+                const textNodes = Array.from(bubble.childNodes).filter(node => 
+                    node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+                );
+                
+                textNodes.forEach(textNode => {
+                    if (isSingleEmoji(textNode.textContent.trim())) {
+                        const span = document.createElement('span');
+                        span.className = 'stickmoji';
+                        span.textContent = textNode.textContent.trim();
+                        textNode.replaceWith(span);
+                    }
+                });
+                
+                // Hide time for stick-mojis
+                const timeSpan = bubble.querySelector('.message-time');
+                if (timeSpan) timeSpan.style.display = 'none';
+            }
+        });
+    }
 
     // Auto-scroll to bottom on page load
     const messagesContainer = document.getElementById('messages');
@@ -1300,21 +1508,26 @@
     });
 
     function submitMessage() {
-        if (isSubmitting) return; // Prevent double submission
+        if (isSubmitting) {
+            console.log('[Submit] Already submitting, ignoring duplicate call');
+            return; // Prevent double submission
+        }
         
         const messageBody = messageInput.value.trim();
         
         // Check all file inputs for files
         const allFileInputs = messageForm.querySelectorAll('input[type="file"]');
         let hasFile = false;
+        let fileDetails = [];
         allFileInputs.forEach(input => {
             if (input.files && input.files.length > 0) {
                 hasFile = true;
-                console.log('[Submit] Found file:', input.files[0].name, 'in input:', input.name || input.id);
+                fileDetails.push(`${input.id}: ${input.files[0].name}`);
+                console.log('[Submit] Found file:', input.files[0].name, 'in input:', input.id);
             }
         });
         
-        console.log('[Submit] Message body:', messageBody, 'Has file:', hasFile);
+        console.log('[Submit] Starting submission - Body:', messageBody ? `"${messageBody.substring(0, 30)}..."` : 'empty', 'Has file:', hasFile, 'Files:', fileDetails.join(', '));
         
         // Require either text or file
         if (!messageBody && !hasFile) {
@@ -1336,14 +1549,29 @@
             method: 'POST',
             body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
             }
         })
         .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
+            console.log('[Submit] Response status:', response.status, response.statusText);
+            console.log('[Submit] Content-Type:', response.headers.get('content-type'));
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.warn('[Submit] Expected JSON but got:', contentType);
+                throw new Error('Invalid response format from server');
+            }
+            
             return response.json();
         })
         .then(data => {
+            console.log('[Submit] Response data:', data);
             if (data.success) {
                 // Add message to chat immediately for sender
                 addMessageToChat(data.message);
@@ -1353,10 +1581,12 @@
                 messageInput.style.height = 'auto';
                 cancelReply();
                 toggleSendButton();
+            } else {
+                throw new Error(data.error || 'Unknown error');
             }
         })
         .catch(error => {
-            console.error('Error sending message:', error);
+            console.error('[Submit] Error sending message:', error);
             alert('Failed to send message. Please try again.');
         })
         .finally(() => {
@@ -1371,7 +1601,11 @@
             // Clear all file inputs
             document.getElementById('imageInput').value = '';
             document.getElementById('videoInput').value = '';
+            document.getElementById('fileInput').value = '';
             document.getElementById('voiceDuration').value = '';
+            
+            // Reset placeholder to default
+            messageInput.placeholder = 'Message';
             
             // Remove dynamic voice file input
             const voiceFileInput = document.getElementById('voiceFileInput');
@@ -1385,15 +1619,38 @@
     // File input handlers
     document.getElementById('imageInput').addEventListener('change', function(e) {
         if (this.files.length > 0) {
+            console.log('[File] Image selected:', this.files[0].name);
             messageInput.placeholder = `📷 ${this.files[0].name}`;
-            submitMessage();
+            // Small delay to ensure file is fully attached to form
+            setTimeout(() => submitMessage(), 50);
         }
     });
 
     document.getElementById('videoInput').addEventListener('change', function(e) {
         if (this.files.length > 0) {
+            console.log('[File] Video selected:', this.files[0].name);
             messageInput.placeholder = `🎥 ${this.files[0].name}`;
-            submitMessage();
+            // Small delay to ensure file is fully attached to form
+            setTimeout(() => submitMessage(), 50);
+        }
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            const maxSize = 100 * 1024 * 1024; // 100MB
+            
+            console.log('[File] Document/file selected:', file.name, 'size:', file.size);
+            
+            if (file.size > maxSize) {
+                alert('File size exceeds 100MB limit. Please choose a smaller file.');
+                this.value = '';
+                return;
+            }
+            
+            messageInput.placeholder = `📎 ${file.name}`;
+            // Small delay to ensure file is fully attached to form
+            setTimeout(() => submitMessage(), 50);
         }
     });
 
@@ -1413,7 +1670,9 @@
         MAX_DURATION: 45, // seconds
         waveformBars: [],
         audioContext: null,
-        analyser: null
+        analyser: null,
+        mimeType: null, // Store the MIME type being used
+        cachedStream: null // Cache the media stream to avoid repeated permission prompts
     };
 
     function startVoiceRecording(event) {
@@ -1446,17 +1705,43 @@
         try {
             console.log('[Voice] Requesting microphone access...');
             
-            // Request microphone access
-            voiceRecorder.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            console.log('[Voice] Microphone access granted');
+            // Try to reuse cached stream if available and active
+            if (voiceRecorder.cachedStream && voiceRecorder.cachedStream.active) {
+                console.log('[Voice] Reusing existing media stream');
+                voiceRecorder.stream = voiceRecorder.cachedStream;
+            } else {
+                // Request new microphone access
+                voiceRecorder.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log('[Voice] Microphone access granted');
+                
+                // Cache the stream for future use
+                voiceRecorder.cachedStream = voiceRecorder.stream;
+            }
             
-            // Initialize MediaRecorder
-            voiceRecorder.mediaRecorder = new MediaRecorder(voiceRecorder.stream);
+            // Determine best MIME type for cross-browser compatibility
+            let mimeType = 'audio/webm;codecs=opus';
+            if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                mimeType = 'audio/mp4';
+            } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                mimeType = 'audio/webm;codecs=opus';
+            } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                mimeType = 'audio/webm';
+            } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+                mimeType = 'audio/ogg;codecs=opus';
+            }
+            
+            console.log('[Voice] Using MIME type:', mimeType);
+            
+            // Initialize MediaRecorder with proper MIME type
+            voiceRecorder.mediaRecorder = new MediaRecorder(voiceRecorder.stream, {
+                mimeType: mimeType
+            });
+            voiceRecorder.mimeType = mimeType;
             voiceRecorder.audioChunks = [];
             voiceRecorder.startTime = Date.now();
             voiceRecorder.isLocked = false;
             voiceRecorder.isPaused = false;
-            console.log('[Voice] MediaRecorder initialized');
+            console.log('[Voice] MediaRecorder initialized with MIME type:', mimeType);
             
             // Setup audio analysis for waveform
             setupAudioAnalysis();
@@ -1662,25 +1947,47 @@
         // Wait for data
         voiceRecorder.mediaRecorder.onstop = async () => {
             console.log('[Voice] Recording stopped, processing audio...');
-            const audioBlob = new Blob(voiceRecorder.audioChunks, { type: 'audio/webm' });
+            
+            // Use the MIME type that was used for recording
+            const mimeType = voiceRecorder.mimeType || 'audio/webm';
+            const audioBlob = new Blob(voiceRecorder.audioChunks, { type: mimeType });
             const duration = Math.floor((Date.now() - voiceRecorder.startTime) / 1000);
             
             console.log('[Voice] Audio blob size:', audioBlob.size, 'bytes, duration:', duration, 'seconds');
+            console.log('[Voice] MIME type:', mimeType);
             
-            // Create file from blob
-            const file = new File([audioBlob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+            // Determine file extension based on MIME type
+            let extension = 'webm';
+            if (mimeType.includes('mp4')) {
+                extension = 'm4a';
+            } else if (mimeType.includes('ogg')) {
+                extension = 'ogg';
+            } else if (mimeType.includes('webm')) {
+                extension = 'webm';
+            }
+            
+            // Create file from blob with proper extension
+            const fileName = `voice_${Date.now()}.${extension}`;
+            const file = new File([audioBlob], fileName, { type: mimeType });
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             
+            console.log('[Voice] Created file:', fileName, 'type:', mimeType);
+            
             console.log('[Voice] Created file:', file.name, 'size:', file.size);
             
-            // Remove old dynamic file inputs (not the original image/video inputs)
-            messageForm.querySelectorAll('input[type="file"]').forEach(input => {
-                if (input.id !== 'imageInput' && input.id !== 'videoInput' && input.id !== 'fileInput') {
-                    console.log('[Voice] Removing old file input:', input.name || input.id);
-                    input.remove();
-                }
-            });
+            // CRITICAL: Clear all existing file inputs first to prevent conflicts
+            document.getElementById('imageInput').value = '';
+            document.getElementById('videoInput').value = '';
+            document.getElementById('fileInput').value = '';
+            console.log('[Voice] Cleared all existing file inputs');
+            
+            // Remove any old dynamic voice file input
+            const oldVoiceInput = document.getElementById('voiceFileInput');
+            if (oldVoiceInput) {
+                oldVoiceInput.remove();
+                console.log('[Voice] Removed old voice file input');
+            }
             
             // Create and add new file input for voice
             const fileInput = document.createElement('input');
@@ -1697,8 +2004,8 @@
             document.getElementById('voiceDuration').value = duration;
             console.log('[Voice] Set voice duration:', duration);
             
-            // Stop all tracks
-            voiceRecorder.stream.getTracks().forEach(track => track.stop());
+            // Keep stream alive for reuse (don't stop tracks)
+            // voiceRecorder.stream.getTracks().forEach(track => track.stop());
             
             // Clean up UI
             closeVoiceRecording();
@@ -1730,10 +2037,10 @@
             voiceRecorder.audioContext.close();
         }
         
-        // Stop all tracks
-        if (voiceRecorder.stream) {
-            voiceRecorder.stream.getTracks().forEach(track => track.stop());
-        }
+        // Keep stream alive for reuse (don't stop tracks)
+        // if (voiceRecorder.stream) {
+        //     voiceRecorder.stream.getTracks().forEach(track => track.stop());
+        // }
         
         // Clean up
         closeVoiceRecording();
@@ -1751,12 +2058,13 @@
         document.getElementById('lockIcon').classList.remove('locked');
         document.getElementById('lockText').textContent = 'Slide up to lock';
         
-        // Reset recorder state
+        // Reset recorder state (but keep cachedStream alive for reuse)
         voiceRecorder.mediaRecorder = null;
         voiceRecorder.audioChunks = [];
         voiceRecorder.stream = null;
         voiceRecorder.isLocked = false;
         voiceRecorder.isPaused = false;
+        // Note: We intentionally don't reset cachedStream so it can be reused
         
         // Remove event listeners
         document.removeEventListener('mousemove', handleRecordingGesture);
@@ -1776,6 +2084,27 @@
         const speedControl = voiceMessage.querySelector('.voice-speed');
         const durationDisplay = voiceMessage.querySelector('.voice-duration');
         const waveformBars = voiceMessage.querySelectorAll('.voice-waveform-bar');
+        
+        console.log('[Voice Playback] Playing:', url, 'Message ID:', messageId);
+        
+        // Add error handler
+        audio.onerror = (e) => {
+            console.error('[Voice Playback] Error:', audio.error);
+            if (audio.error) {
+                console.error('[Voice Playback] Error code:', audio.error.code);
+                console.error('[Voice Playback] Error message:', audio.error.message);
+            }
+            alert('Unable to play voice message. The audio format may not be supported by your browser.');
+        };
+        
+        // Add load handler for debugging
+        audio.addEventListener('loadedmetadata', () => {
+            console.log('[Voice Playback] Audio loaded successfully. Duration:', audio.duration);
+        }, { once: true });
+        
+        audio.addEventListener('canplay', () => {
+            console.log('[Voice Playback] Audio can play');
+        }, { once: true });
         
         // Initialize state if not exists
         if (!voicePlaybackStates.has(messageId)) {
@@ -2076,6 +2405,8 @@
                 replyContent = '🎥 Video';
             } else if (message.reply_to.file_type === 'voice') {
                 replyContent = '🎤 Voice message';
+            } else if (message.reply_to.file_type === 'document') {
+                replyContent = '📄 ' + (message.reply_to.file_name || 'Document');
             } else {
                 replyContent = truncateText(message.reply_to.body || '', 10);
             }
@@ -2111,7 +2442,42 @@
                             <span class="voice-speed" onclick="cyclePlaybackSpeed(${message.id}, this)">1x</span>
                         </div>
                     </div>
-                    <audio style="display:none;" src="${message.file_url}"></audio>
+                    <audio preload="metadata" controlsList="nodownload" style="position:absolute;opacity:0;pointer-events:none;">
+                        <source src="${message.file_url}" type="audio/mpeg">
+                        <source src="${message.file_url}" type="audio/mp4">
+                        <source src="${message.file_url}" type="audio/webm">
+                        <source src="${message.file_url}" type="audio/ogg">
+                    </audio>
+                </div>
+            `;
+        } else if (message.file_type === 'document' && message.file_url) {
+            const fileName = message.file_name || 'Document';
+            const fileExt = fileName.slice(-3).toUpperCase();
+            let fileSizeText = '';
+            if (message.file_size) {
+                const size = message.file_size;
+                if (size < 1024) {
+                    fileSizeText = size + ' B';
+                } else if (size < 1048576) {
+                    fileSizeText = (size / 1024).toFixed(1) + ' KB';
+                } else {
+                    fileSizeText = (size / 1048576).toFixed(1) + ' MB';
+                }
+            }
+            mediaHtml = `
+                <div class="document-attachment">
+                    <div class="document-icon">${fileExt}</div>
+                    <div class="document-info">
+                        <div class="document-name">${fileName}</div>
+                        <div class="document-size">${fileSizeText}</div>
+                    </div>
+                    <a href="${message.file_url}" download="${fileName}" class="document-download">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                    </a>
                 </div>
             `;
         }
@@ -2119,16 +2485,27 @@
         // Extract time from created timestamp
         const timeOnly = message.created.split(',')[1]?.trim() || message.created;
         
+        // Check if message is a stick-moji (single emoji without media)
+        const isStickmoji = !message.file_url && message.body && isSingleEmoji(message.body);
+        const bubbleClass = message.reply_to ? 'message-with-reply' : '';
+        const stickmojiClass = isStickmoji ? 'has-stickmoji' : '';
+        
+        // Format body with stick-moji wrapper if applicable
+        let bodyHtml = message.body || '';
+        if (isStickmoji && !message.file_url) {
+            bodyHtml = `<span class="stickmoji">${message.body}</span>`;
+        }
+        
         messageDiv.innerHTML = `
             ${avatarHtml}
             <div class="message-content">
                 ${senderNameHtml}
                 <div class="message-bubble-wrapper">
-                    <div class="message-bubble ${message.reply_to ? 'message-with-reply' : ''}">
+                    <div class="message-bubble ${bubbleClass} ${stickmojiClass}">
                         ${replyHtml}
                         ${mediaHtml}
-                        ${message.body || ''}
-                        <span class="message-time">${timeOnly}</span>
+                        ${bodyHtml}
+                        ${!isStickmoji ? `<span class="message-time">${timeOnly}</span>` : ''}
                     </div>
                     <span class="reply-indicator">↩️</span>
                 </div>

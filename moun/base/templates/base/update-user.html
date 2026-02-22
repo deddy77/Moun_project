@@ -20,6 +20,13 @@
                     <div class="layout__body">
                         <form class="form" action="" method="POST" enctype="multipart/form-data">
                           {% csrf_token %}
+                            
+                            <!-- Display username as read-only (non-editable) -->
+                            <div class="form__group">
+                                <label for="username">Username</label>
+                                <input type="text" value="{{user.username}}" disabled readonly style="background-color: #f0f0f0; cursor: not-allowed; color: #333; opacity: 1;">
+                            </div>
+                            
                             {% for field in form %}
                             <div class="form__group">
                                 <label for="profile_pic">{{field.label}}</label>
